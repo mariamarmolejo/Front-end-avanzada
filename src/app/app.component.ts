@@ -1,12 +1,16 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {HeaderComponent} from "./shared/components/header/header.component";
+import {RouterOutlet} from "@angular/router";
+
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css'],
+  standalone: true,
+  imports: [HeaderComponent, RouterOutlet] // 🔹 Agrégalo aquí
 })
+
 export class AppComponent {
-  title = 'front-end-avanzada';
+
 }
