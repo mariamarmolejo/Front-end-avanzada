@@ -1,0 +1,27 @@
+<div class="register-container">
+    <h2>CREA UNA CUENTA</h2>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+        <input type="text" placeholder="Nombre completo" formControlName="name" name="name">
+        <div *ngIf="registerForm.controls['name'].errors?.['required'] && registerForm.controls['name'].touched">
+            ⚠ Name is required!
+        </div>
+
+        <div class="row">
+            <input type="text" placeholder="Ciudad" formControlName="city" name="city">
+            <input type="tel" placeholder="Teléfono" formControlName="phone" name="phone">
+        </div>
+
+        <input type="text" placeholder="Dirección" formControlName="address" name="address">
+        <input type="email" placeholder="Correo" formControlName="email" name="email">
+        <div *ngIf="registerForm.controls['email']?.errors?.['email'] && registerForm.controls['email'].touched">
+            ⚠ Email is required!
+        </div>
+        <input type="password" placeholder="Contraseña" formControlName="password" name="password">
+
+        <button type="submit" class="submit-button" [disabled]="registerForm.invalid">SIGN IN</button>
+    </form>
+    <p>¿Ya tienes una cuenta? <a href="/login">Iniciar sesión</a></p>
+
+</div>
+  

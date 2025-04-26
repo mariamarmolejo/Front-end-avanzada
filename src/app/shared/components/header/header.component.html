@@ -1,0 +1,18 @@
+<!-- Botón de menú (☰) -->
+<div class="sidebar" [class.active]="isOpen">
+    <ul>
+        <li><a href="#">Inicio</a></li>
+        <li><a href="#">Acerca de compañia</a></li>
+        <div *ngIf="!isLoggedIn">
+            <li><a href="/register">Crear cuenta</a></li>
+        </div>
+        <div *ngIf="isLoggedIn">
+            <li><a href="#">Mi Cuenta</a></li>
+            <li><a href="#">Ajustes</a></li>
+            <li><a href="#login" (click)="logout()">Cerrar Sesión</a></li>
+        </div>
+
+    </ul>
+</div>
+<!-- Botón para abrir el menú -->
+<button class="menu-button" (click)="toggleMenu()">☰</button>

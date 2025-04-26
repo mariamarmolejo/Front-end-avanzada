@@ -1,0 +1,43 @@
+.sidebar {
+    position: fixed;
+    right: -250px; /* 🔹 Mueve el sidebar fuera de la pantalla (derecha) */
+    top: 0;
+    width: 250px;
+    height: 100%;
+    background: #2c3e50;
+    color: white;
+    transition: 0.3s ease-in-out;
+    padding-top: 60px;
+}
+
+.sidebar.active {
+    right: 0; /* 🔹 Cuando el menú está activo, se despliega desde la derecha */
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+
+.menu-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: white;
+    border: none;
+    padding: 5px 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.sidebar ul li {
+    padding: 15px;
+    text-align: center;
+}
+
+.sidebar ul li a {
+    color: white;
+    text-decoration: none;
+    display: block;
+}

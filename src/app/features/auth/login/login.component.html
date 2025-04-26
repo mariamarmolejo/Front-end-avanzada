@@ -1,0 +1,43 @@
+
+   <form [formGroup]="registerForm" novalidate>
+        <div class="login-container">
+          <h2>INICIAR SESIÓN</h2>
+          
+          <div>
+            <input
+              type="email"
+              id="email"
+              placeholder="Correo"
+              formControlName="email"
+              name="email"
+            />
+            <div *ngIf="emailInvalid">
+              ⚠ Email inválido o vacío
+            </div>
+          </div>
+      
+          <div>
+            <input
+              type="password"
+              id="password"
+              placeholder="contraseña"
+              formControlName="password"
+              name="password"
+            />
+            <div *ngIf="passwordInvalid">
+              ⚠ La contraseña es obligatoria.
+            </div>
+          </div>
+      
+          <button
+            type="button"
+            class="submit-button"
+            (click)="onLogin()"
+            [disabled]="registerForm.invalid"
+          >
+            Ingresar
+          </button>
+      
+          <p>¿No tienes una cuenta? <a routerLink="/register">Regístrate aquí</a></p>
+        </div>
+      </form>
