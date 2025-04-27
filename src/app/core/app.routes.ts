@@ -1,15 +1,25 @@
-import {Routes} from '@angular/router';
-import {RegisterComponent} from "../features/register/register.component";
-import {LoginComponent} from "../features/auth/login/login.component";
-import {MapViewComponent} from "../shared/components/map-view/map-view.component";
-import {AuthGuard} from './guards/auth.guard';
-
+import { Routes } from '@angular/router';
+import { RegisterComponent } from '../features/register/register.component';
+import { LoginComponent } from '../features/auth/login/login.component';
+import { MapViewComponent } from '../shared/components/map-view/map-view.component';
+import { AuthGuard } from './guards/auth.guard';
+import { VerificationComponent } from '../features/register/verification_code/verification.component';
 
 export const routes: Routes = [
-    {path: 'login', component: LoginComponent}, // Ruta raíz
-    {path: 'register', component: RegisterComponent}, // Ruta de "Register"
-    {path: 'map', component: MapViewComponent, canActivate: [AuthGuard]}, // Ruta de "Register"
-    {path: '**', component: LoginComponent} // Ruta comodín
+  // Ruta raíz: redirige a login
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
 
+  // Autenticación y registro
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
 
+  // Verificación de cuenta tras registro
+  { path: 'validate-account', component: VerificationComponent },
+
+  // Rutas protegidas
+  { path: 'map', component: MapViewComponent, canActivate: [AuthGuard] },
+
+  // Comodín (cualquier otra ruta va a login, o a dónde prefieras)
+  { path: '**', redirectTo: 'login' },
 ];
+

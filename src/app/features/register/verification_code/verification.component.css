@@ -1,0 +1,126 @@
+:root {
+  --primary-bg: #e0f4fa;
+  --primary-accent: #79b4d8;
+  --primary-dark: #1e3a5f;
+  --input-bg: #ffffff;
+  --error-color: #e74c3c;
+}
+
+.verification-container {
+  width: 380px;
+  background: var(--input-bg);
+  margin: 80px auto;
+  padding: 30px 25px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  font-size: 3rem;
+  color: var(--primary-accent);
+  margin-bottom: 15px;
+}
+
+h2 {
+  font-size: 24px;
+  margin-bottom: 8px;
+  color: var(--primary-dark);
+}
+
+.subtitle {
+  font-size: 14px;
+  margin-bottom: 25px;
+  color: var(--primary-accent);
+}
+
+.code-inputs {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+/* Cada casilla con borde visible para debugging */
+.digit-input {
+  width: 48px;
+  height: 60px;
+  font-size: 2rem;
+  text-align: center;
+  border: 2px dashed var(--primary-dark); /* Borde visible */
+  border-radius: 6px;
+  background: var(--input-bg);
+  background-image: linear-gradient(
+    to bottom right,
+    var(--primary-accent) 2px,
+    transparent 2px
+  );
+  background-size: 100% 100%;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.digit-input:focus {
+  outline: none;
+  border-color: var(--primary-accent);
+}
+
+/* Cuando está lleno de un dígito, quitamos la diagonal */
+.digit-input.ng-valid {
+  background-image: none;
+}
+
+.submit-button {
+  width: 100%;
+  padding: 12px;
+  background: var(--primary-accent);
+  color: var(--primary-dark);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.submit-button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+  color: #ccc;
+}
+
+.submit-button:not(:disabled):hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  color: var(--input-bg);
+}
+
+.resend-container {
+  margin-top: 20px;
+}
+
+.resend-button {
+  padding: 10px 16px;
+  background: var(--primary-bg);
+  color: var(--primary-dark);
+  border: 2px solid var(--primary-accent);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.3s ease, transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.resend-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.resend-button:not(:disabled):hover {
+  background: var(--primary-accent);
+  color: var(--input-bg);
+  transform: translateY(-1px);
+}

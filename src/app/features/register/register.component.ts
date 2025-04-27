@@ -1,13 +1,28 @@
+// register.component.ts
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import mapboxgl from 'mapbox-gl';
+import { NgIf } from '@angular/common';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../../app/core/services/auth.service';
+import { UserRegistration } from '../../core/models/user-registration.model';
+// Import de Material
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { RouterModule } from '@angular/router'; // <-- IMPORTA ESTO
+import { Router } from '@angular/router';
+
+
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ CommonModule, ReactiveFormsModule ],
+  imports: [
+    CommonModule,
+    NgIf,
+    ReactiveFormsModule,
+    RouterModule, // <-- AGREGA ESTO
+  ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
@@ -18,7 +33,12 @@ export class RegisterComponent implements OnInit, AfterViewInit {
   map!: mapboxgl.Map;
   marker!: mapboxgl.Marker;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,  // inyecta el servicio
+    private snackBar: MatSnackBar,
+    private router: Router,
+  ) {
     this.registerForm = this.fb.group({
       fullName: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(50)]],
       email: ['', [Validators.required, Validators.email, Validators.minLength(8), Validators.maxLength(50)]],
@@ -35,19 +55,16 @@ export class RegisterComponent implements OnInit, AfterViewInit {
     mapboxgl.accessToken = environment.mapboxToken;
   }
 
-  ngAfterViewInit() {
-    // Esto no hace nada ahora, pero si quieres modularizar más adelante, aquí puede ir
-  }
+  ngAfterViewInit() {}
 
   continueToMap() {
     if (this.registerForm.valid) {
       this.isLoadingMap = true;
       this.showMap = true;
-      // Espera a que Angular renderice el contenedor del mapa
       setTimeout(() => this.initializeMap(), 50);
     }
   }
-  
+
   initializeMap() {
     this.map = new mapboxgl.Map({
       container: 'map_user',
@@ -56,18 +73,18 @@ export class RegisterComponent implements OnInit, AfterViewInit {
       zoom: 13,
       attributionControl: false
     });
-  
+
     this.map.on('load', () => {
       this.map.resize();
       this.isLoadingMap = false;
     });
-  
+
     this.map.on('click', ({ lngLat }) => {
       this.registerForm.patchValue({
         latitude: lngLat.lat,
         longitude: lngLat.lng
       });
-  
+
       if (this.marker) {
         this.marker.setLngLat(lngLat);
       } else {
@@ -76,17 +93,57 @@ export class RegisterComponent implements OnInit, AfterViewInit {
           .addTo(this.map);
       }
     });
-  }  
-
-  onRegister() {
-    if (this.registerForm.valid) {
-      console.log(this.registerForm.value);
-      alert('Registro exitoso');
-    } else {
-      alert('Faltan datos de ubicación');
-    }
   }
 
+  onRegister(): void {
+    if (this.registerForm.invalid) {
+      this.registerForm.markAllAsTouched();
+      return;
+    }
+  
+    const data = this.registerForm.value as UserRegistration;
+  
+    // Validar que latitude y longitude no sean nulos o undefined
+    if (data.latitude == null || data.longitude == null) {
+      this.snackBar.open('Por favor selecciona una ubicación.', 'Cerrar', {
+        duration: 5000,
+        horizontalPosition: 'center',
+        verticalPosition: 'top',
+        panelClass: ['snackbar-error']
+      });
+      return;
+    }
+  
+    this.authService.register(data).subscribe({
+      next: () => {
+        this.snackBar.open('¡Registro exitoso!', 'Cerrar', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
+        this.router.navigate(['/validate-account']);
+      },
+      error: err => {
+        const status = err.status;
+        let message = 'Ocurrió un error. Intenta de nuevo.';
+  
+        if (status === 400)      message = err.error?.message || 'Datos inválidos.';
+        else if (status === 409) message = 'El correo ya está registrado.';
+        else if (status === 500) message = 'Error interno del servidor.';
+  
+        this.snackBar.open(message, 'Cerrar', {
+          duration: 5000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+          panelClass: ['snackbar-error']
+        });
+      }
+    });
+  }
+  
+  
+
+  // getters de validación...
   // Validaciones
   get fullNameInvalid(): boolean {
     const control = this.registerForm.get('fullName');

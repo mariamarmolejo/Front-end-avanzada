@@ -1,0 +1,91 @@
+<!-- Font Awesome ya cargado en tu index.html -->
+
+<div class="verification-container">
+  <div class="logo">
+    <i class="fas fa-shield-alt"></i>
+  </div>
+
+  <h2>Verificación de Cuenta</h2>
+  <p class="subtitle">Ingresa el código de 6 dígitos enviado a tu correo</p>
+
+  <form [formGroup]="verificationForm" (ngSubmit)="submitCode()">
+    <div class="code-inputs">
+      <input
+        #digitInput
+        type="text"
+        maxlength="1"
+        formControlName="digit0"
+        class="digit-input"
+        placeholder="-"
+        (input)="onCodeInput($event, 0)"
+      />
+      <input
+        #digitInput
+        type="text"
+        maxlength="1"
+        formControlName="digit1"
+        class="digit-input"
+        placeholder="-"
+        (input)="onCodeInput($event, 1)"
+      />
+      <input
+        #digitInput
+        type="text"
+        maxlength="1"
+        formControlName="digit2"
+        class="digit-input"
+        placeholder="-"
+        (input)="onCodeInput($event, 2)"
+      />
+      <input
+        #digitInput
+        type="text"
+        maxlength="1"
+        formControlName="digit3"
+        class="digit-input"
+        placeholder="-"
+        (input)="onCodeInput($event, 3)"
+      />
+      <input
+        #digitInput
+        type="text"
+        maxlength="1"
+        formControlName="digit4"
+        class="digit-input"
+        placeholder="-"
+        (input)="onCodeInput($event, 4)"
+      />
+      <input
+        #digitInput
+        type="text"
+        maxlength="1"
+        formControlName="digit5"
+        class="digit-input"
+        placeholder="-"
+        (input)="onCodeInput($event, 5)"
+      />
+    </div>
+
+    <button
+      type="submit"
+      class="submit-button"
+      [disabled]="verificationForm.invalid"
+    >
+      <i class="fas fa-check-circle"></i>
+      Validar Código
+    </button>
+  </form>
+
+  <div class="resend-container">
+    <button
+      type="button"
+      class="resend-button"
+      (click)="resendCode()"
+      [disabled]="resendDisabled"
+    >
+      <i class="fas fa-clock"></i>
+      <span *ngIf="resendDisabled">Reenviar en {{ formattedTime }}</span>
+      <span *ngIf="!resendDisabled">Reenviar Código</span>
+    </button>
+  </div>
+</div>

@@ -6,7 +6,6 @@ import { Router } from '@angular/router';
 
 // Import de Material
 import { MatSnackBar } from '@angular/material/snack-bar';
-
 import { RouterModule } from '@angular/router'; // <-- IMPORTA ESTO
 
 @Component({
