@@ -7,14 +7,15 @@ import { Router } from '@angular/router';
 // Import de Material
 import { MatSnackBar } from '@angular/material/snack-bar';
 
+import { RouterModule } from '@angular/router'; // <-- IMPORTA ESTO
+
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [
     ReactiveFormsModule,
     NgIf,
-    // si necesitas usar directivas de Material en la plantilla:
-    // importProvidersFrom(MatFormFieldModule, MatInputModule)
+    RouterModule, // <-- AGREGA ESTO
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']

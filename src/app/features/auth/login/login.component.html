@@ -1,43 +1,53 @@
+<div class="login-container">
+  <!-- Logo -->
+  <img alt="MapHopper" src="logo.png" class="logo" />
 
-   <form [formGroup]="registerForm" novalidate>
-        <div class="login-container">
-          <h2>INICIAR SESIÓN</h2>
-          
-          <div>
-            <input
-              type="email"
-              id="email"
-              placeholder="Correo"
-              formControlName="email"
-              name="email"
-            />
-            <div *ngIf="emailInvalid">
-              ⚠ Email inválido o vacío
-            </div>
-          </div>
-      
-          <div>
-            <input
-              type="password"
-              id="password"
-              placeholder="contraseña"
-              formControlName="password"
-              name="password"
-            />
-            <div *ngIf="passwordInvalid">
-              ⚠ La contraseña es obligatoria.
-            </div>
-          </div>
-      
-          <button
-            type="button"
-            class="submit-button"
-            (click)="onLogin()"
-            [disabled]="registerForm.invalid"
-          >
-            Ingresar
-          </button>
-      
-          <p>¿No tienes una cuenta? <a routerLink="/register">Regístrate aquí</a></p>
-        </div>
-      </form>
+  <h2>INICIAR SESIÓN</h2>
+
+  <form [formGroup]="registerForm" novalidate>
+    <!-- Email -->
+    <div class="field-group">
+      <i class="fa fa-envelope icon"></i>
+      <input
+        type="email"
+        id="email"
+        placeholder="Correo"
+        formControlName="email"
+        name="email"
+      />
+    </div>
+    <div *ngIf="emailInvalid" class="error-message">
+      ⚠ Email inválido o vacío
+    </div>
+
+    <!-- Contraseña -->
+    <div class="field-group">
+      <i class="fa fa-lock icon"></i>
+      <input
+        type="password"
+        id="password"
+        placeholder="Contraseña"
+        formControlName="password"
+        name="password"
+      />
+    </div>
+    <div *ngIf="passwordInvalid" class="error-message">
+      ⚠ La contraseña es obligatoria.
+    </div>
+
+    <!-- Botón -->
+    <button
+      type="button"
+      class="submit-button"
+      (click)="onLogin()"
+      [disabled]="registerForm.invalid"
+    >
+      Ingresar
+    </button>
+
+    <p class="register-link">
+      ¿No tienes una cuenta?
+      <a routerLink="/register">Regístrate aquí</a>
+    </p>
+  </form>
+</div>

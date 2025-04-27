@@ -1,27 +1,90 @@
 <div class="register-container">
-    <h2>CREA UNA CUENTA</h2>
+  <h2 *ngIf="!showMap">CREA UNA CUENTA</h2>
 
-    <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
-        <input type="text" placeholder="Nombre completo" formControlName="name" name="name">
-        <div *ngIf="registerForm.controls['name'].errors?.['required'] && registerForm.controls['name'].touched">
-            ⚠ Name is required!
-        </div>
+  <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
 
-        <div class="row">
-            <input type="text" placeholder="Ciudad" formControlName="city" name="city">
-            <input type="tel" placeholder="Teléfono" formControlName="phone" name="phone">
-        </div>
+    <!-- Paso 1: Datos -->
+    <div *ngIf="!showMap">
+      <div class="field-group">
+        <i class="icon fa fa-user"></i>
+        <input type="text"
+               placeholder="Nombre completo"
+               formControlName="fullName" />
+      </div>
+      <div *ngIf="fullNameInvalid" class="error-message">
+        ⚠ El nombre completo es obligatorio.
+      </div>
 
-        <input type="text" placeholder="Dirección" formControlName="address" name="address">
-        <input type="email" placeholder="Correo" formControlName="email" name="email">
-        <div *ngIf="registerForm.controls['email']?.errors?.['email'] && registerForm.controls['email'].touched">
-            ⚠ Email is required!
-        </div>
-        <input type="password" placeholder="Contraseña" formControlName="password" name="password">
+      <div class="field-group">
+        <i class="icon fa fa-envelope"></i>
+        <input type="email"
+               placeholder="Correo electrónico"
+               formControlName="email" />
+      </div>
+      <div *ngIf="emailInvalid" class="error-message">
+        ⚠ El correo electrónico no es válido o está vacío.
+      </div>
 
-        <button type="submit" class="submit-button" [disabled]="registerForm.invalid">SIGN IN</button>
-    </form>
-    <p>¿Ya tienes una cuenta? <a href="/login">Iniciar sesión</a></p>
+      <div class="field-group">
+        <i class="icon fa fa-lock"></i>
+        <input type="password"
+               placeholder="Contraseña"
+               formControlName="password" />
+      </div>
+      <div *ngIf="passwordInvalid" class="error-message">
+        ⚠ La contraseña debe tener un dígito, una mayúscula y una minúscula.
+      </div>
 
+      <div class="field-group">
+        <i class="icon fa fa-calendar"></i>
+        <input type="date" formControlName="dateBirth" />
+      </div>
+      <div *ngIf="dateBirthInvalid" class="error-message">
+        ⚠ La fecha de nacimiento es obligatoria.
+      </div>
+
+      <div class="field-group">
+        <i class="icon fa fa-city"></i>
+        <input type="text"
+               placeholder="Ciudad de residencia"
+               formControlName="cityOfResidence" />
+      </div>
+      <div *ngIf="cityOfResidenceInvalid" class="error-message">
+        ⚠ La ciudad de residencia es obligatoria.
+      </div>
+
+      <div class="field-group">
+        <i class="icon fa fa-bullhorn"></i>
+        <input type="number"
+               placeholder="Radio de notificaciones (Km)"
+               formControlName="notificationRadiusKm" />
+      </div>
+      <div *ngIf="notificationRadiusInvalid" class="error-message">
+        ⚠ El radio de notificaciones debe ser mayor a 0.
+      </div>
+
+      <button type="button"
+              class="submit-button"
+              (click)="continueToMap()"
+              [disabled]="registerForm.invalid">
+        Continuar
+      </button>
+    </div>
+
+    <!-- Cargando mapa -->
+    <div *ngIf="isLoadingMap" class="loading-spinner">
+      Cargando mapa...
+    </div>
+
+    <!-- Paso 2: Selección en el mapa -->
+    <div *ngIf="showMap">
+      <div id="map_user" style="width:100%; height:400px;"></div>
+      <p>Haz clic en el mapa para seleccionar tu ubicación.</p>
+      <button type="submit"
+              class="submit-button"
+              [disabled]="registerForm.invalid">
+        Registrar
+      </button>
+    </div>
+  </form>
 </div>
-  

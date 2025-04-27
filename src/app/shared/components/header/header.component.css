@@ -1,43 +1,81 @@
+:root {
+  --primary-bg: #e0f4fa;       /* Cyan muy claro */
+  --primary-accent: #79b4d8;   /* Azul medio */
+  --primary-dark: #1e3a5f;     /* Azul oscuro para texto */
+  --input-bg: #ffffff;         /* Blanco para inputs */
+  --error-color: #e74c3c;      /* Rojo para mensajes de error */
+  --hover-bg: #c0c8d4;         /* Gris oscuro para hover en el fondo */
+}
+
 .sidebar {
-    position: fixed;
-    right: -250px; /* 🔹 Mueve el sidebar fuera de la pantalla (derecha) */
-    top: 0;
-    width: 250px;
-    height: 100%;
-    background: #2c3e50;
-    color: white;
-    transition: 0.3s ease-in-out;
-    padding-top: 60px;
+  position: fixed;
+  right: -270px;
+  top: 0;
+  width: 250px;
+  height: 100%;
+  background: var(--primary-bg); /* Azul claro */
+  color: var(--primary-dark);    /* Azul oscuro para texto */
+  transition: right 0.4s ease;
+  padding-top: 80px;
+  box-shadow: -4px 0 8px rgba(0, 0, 0, 0.2);
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  z-index: 999;
 }
 
 .sidebar.active {
-    right: 0; /* 🔹 Cuando el menú está activo, se despliega desde la derecha */
+  right: 0;
 }
 
 .sidebar ul {
-    list-style: none;
-    padding: 0;
-}
-
-
-.menu-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: white;
-    border: none;
-    padding: 5px 10px;
-    font-size: 20px;
-    cursor: pointer;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .sidebar ul li {
-    padding: 15px;
-    text-align: center;
+  padding: 15px 20px;
+  text-align: left;
+  transition: background 0.3s ease;
+  font-weight: 500;
+  font-size: 16px;
+  background: var(--input-bg);  /* Blanco de fondo en los items */
+}
+
+.sidebar ul li:hover {
+  background:  #aaa; /* Gris oscuro al pasar mouse */
+  cursor: pointer;
+  border-radius: 8px;
 }
 
 .sidebar ul li a {
-    color: white;
-    text-decoration: none;
-    display: block;
+  color: var(--primary-dark); /* Azul oscuro para los links */
+  text-decoration: none;
+  display: block;
+}
+
+.menu-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: var(--primary-bg); /* Azul muy claro */
+  border: none;
+  color: var(--primary-dark);    /* Azul oscuro para el texto */
+  padding: 10px 15px;
+  font-size: 24px;
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s, transform 0.2s;
+  z-index: 1000;
+}
+
+.menu-button:hover {
+  background: var(--primary-accent); /* Azul medio al pasar el mouse */
+  transform: scale(1.05);
+}
+
+.menu-button:active {
+  background: #7a99c3; /* Azul más oscuro cuando se hace clic */
+  transform: scale(0.95);
 }
