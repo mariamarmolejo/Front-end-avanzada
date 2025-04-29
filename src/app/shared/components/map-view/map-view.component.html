@@ -1,12 +1,33 @@
-<div class="map-container">
+<div class="map-view-container">
 
-    <!-- Barra de búsqueda -->
-    <div class="search-bar">
-        <input type="text" placeholder="Buscar..." #searchInput/>
-        <button (click)="search(searchInput.value)">🔍</button>
+    <div class="report-panel">
+        <h3>Reportes</h3>
+
+        <div class="filter-section">
+            <label for="category-filter">Filtrar por categoría:</label>
+            <select id="category-filter" #categorySelect (change)="filterReports(categorySelect.value)">
+                <option value="">Todos</option>
+                <option *ngFor="let category of categories" [value]="category.name">{{ category.name }}</option>
+            </select>
+        </div>
+
+        <ul class="report-list">
+            <li *ngFor="let report of filteredReports" (click)="flyToReport(report)">
+                <strong>{{ report.nombre }}</strong> ({{ report.category }})
+                <p>Lat: {{ report.lat }}, Lng: {{ report.lng }}</p>
+            </li>
+            <li *ngIf="filteredReports.length === 0">
+                No hay reportes para mostrar con el filtro actual.
+            </li>
+        </ul>
     </div>
 
-    <!-- Mapa -->
-    <div class="map" id="map"></div>
+    <div class="map-panel">
+        <div class="search-bar">
+            <input type="text" placeholder="Buscar dirección..." #searchInput/>
+            <button (click)="searchAddress(searchInput.value)">🔍</button>
+        </div>
+        <div class="map" id="map"></div>
+    </div>
 
 </div>

@@ -9,7 +9,7 @@
       <div *ngIf="isLoggedIn">
         <li><a routerLink="/account">Mi Cuenta</a></li>
         <li><a routerLink="/settings">Ajustes</a></li>
-        <li><a href="#login" (click)="logout()">Cerrar Sesión</a></li>
+        <li><a (click)="logout()">Cerrar Sesión</a></li>
       </div>
     </ul>
   </div>

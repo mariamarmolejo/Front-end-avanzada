@@ -1,18 +1,110 @@
-.map-container {
-    position: relative;
+/* Contenedor principal usando Flexbox */
+.map-view-container {
+    display: flex; /* Activa Flexbox */
     width: 100%;
-    height: 100vh;
+    height: 100vh; /* Ocupa toda la altura de la ventana */
+    overflow: hidden; /* Evita barras de scroll no deseadas */
 }
 
+/* Panel Izquierdo (Reportes) */
+.report-panel {
+    flex: 0 0 300px; /* Ancho fijo de 300px, no crece ni se encoge */
+    background-color: #f8f9fa; /* Un color de fondo claro */
+    padding: 15px;
+    overflow-y: auto; /* Scroll si la lista es muy larga */
+    border-right: 1px solid #dee2e6; /* Separador visual */
+    display: flex;
+    flex-direction: column; /* Organiza elementos verticalmente */
+}
+
+.report-panel h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #343a40;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+}
+
+/* Sección de Filtros */
+.filter-section {
+    margin-bottom: 20px;
+}
+
+.filter-section label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.filter-section select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box; /* Para que el padding no afecte el ancho */
+}
+
+/* Lista de Reportes */
+.report-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1; /* Ocupa el espacio restante en el panel */
+    overflow-y: auto; /* Scroll interno si es necesario */
+}
+
+.report-list li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.report-list li:hover {
+    background-color: #e9ecef; /* Resaltado al pasar el mouse */
+}
+
+.report-list li strong {
+    display: block;
+    font-size: 1em;
+    margin-bottom: 3px;
+}
+
+.report-list li p {
+    font-size: 0.85em;
+    color: #6c757d;
+    margin: 0;
+}
+
+/* Panel Derecho (Mapa) */
+.map-panel {
+    flex-grow: 1; /* Ocupa todo el espacio restante */
+    position: relative; /* Necesario para posicionar la barra de búsqueda */
+    display: flex; /* Para que el mapa ocupe todo el espacio */
+    flex-direction: column;
+}
+
+/* Mapa dentro del panel derecho */
+.map {
+    width: 100%;
+    flex-grow: 1; /* El mapa ocupa el espacio disponible */
+    height: 100%; /* Asegura que ocupe la altura del panel */
+}
+
+/* Barra de búsqueda (ajustada para el panel derecho) */
 .search-bar {
-    position: absolute;
+    position: absolute; /* Posicionada sobre el mapa */
     top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 10px; /* La movemos a la esquina superior izquierda del mapa */
+    transform: none; /* Quitamos la transformación previa */
+    z-index: 10; /* Asegura que esté sobre el mapa */
     display: flex;
     background: white;
     padding: 5px;
     border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .search-bar input {
@@ -24,11 +116,5 @@
     border: none;
     background: none;
     cursor: pointer;
+    padding: 5px;
 }
-
-.map {
-    width: 100%;
-    height: 100%;
-}
-
-  

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthService} from "../../../core/services/auth.service";
 import {Router} from "@angular/router";
 import {NgIf} from "@angular/common";
@@ -10,7 +10,7 @@ import {Subscription} from "rxjs";
   styleUrl: './header.component.css',
   imports: [NgIf]
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit, OnDestroy {
   isOpen = false;
   isLoggedIn = false;
   private authSubscription!: Subscription;
@@ -33,7 +33,14 @@ export class HeaderComponent {
     this.isOpen = !this.isOpen;
   }
   logout() {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+    this.authService.logout().subscribe({
+        next: () => {
+            this.router.navigate(['/login']);
+            this.isOpen = false;
+        },
+        error: (error) => {
+            console.error('Error during logout:', error);
+        }
+    });
   }
 }
