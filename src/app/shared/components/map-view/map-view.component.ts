@@ -1,5 +1,14 @@
-import {AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit} from '@angular/core';
-import {CommonModule, NgFor, NgIf} from '@angular/common'; // Importa CommonModule para *ngFor y *ngIf
+import {
+    afterNextRender, AfterRenderPhase,
+    AfterViewInit,
+    ChangeDetectorRef,
+    Component,
+    inject,
+    OnDestroy,
+    OnInit,
+    PLATFORM_ID
+} from '@angular/core';
+import {CommonModule, isPlatformBrowser, NgFor, NgIf} from '@angular/common'; // Importa CommonModule para *ngFor y *ngIf
 import {environment} from '../../../../environments/environment';
 import mapboxgl, {Marker} from 'mapbox-gl';
 import {CategoryService} from "../../../core/services/category.service";
@@ -25,6 +34,7 @@ interface Report {
 export class MapViewComponent implements AfterViewInit, OnDestroy, OnInit {
     mapa!: mapboxgl.Map;
     markers: Marker[] = []; // Almacenará los marcadores actuales en el mapa
+    private platformId = inject(PLATFORM_ID); // Inyecta PLATFORM_ID
 
     // Datos de ejemplo con categoría e ID
     allReports: Report[] = [
@@ -38,10 +48,49 @@ export class MapViewComponent implements AfterViewInit, OnDestroy, OnInit {
     categories: Category[] = [];
 
     filteredReports: Report[] = []; // Los reportes que se muestran en la lista y mapa
-    selectedCategory: string= ''; // La categoría seleccionada
+    selectedCategory: string = ''; // La categoría seleccionada
 
     // Inyecta ChangeDetectorRef para notificar cambios cuando actualizas filteredReports
     constructor(private cdRef: ChangeDetectorRef, private categoryService: CategoryService) {
+
+        afterNextRender(() => {
+            // Asegúrate de que esto se ejecuta SOLO en el navegador
+            if (isPlatformBrowser(this.platformId)) {
+                console.log('afterNextRender: Initializing Mapbox');
+                this.initializeMap();
+            }
+        }, { phase: AfterRenderPhase.Write }); // <-- USA EL ENUMERADOR
+        // ---------------------------------------------
+    }
+
+    initializeMap() {
+        if (this.mapa) return; // Evita reinicializar si ya existe
+
+        // Verifica si el contenedor existe justo antes de crear el mapa
+        const mapContainer = document.getElementById('map');
+        if (!mapContainer) {
+            console.error('Map container #map not found in DOM!');
+            return;
+        }
+        console.log('Map container found, creating map instance...');
+
+
+        this.mapa = new mapboxgl.Map({
+            accessToken: environment.mapboxToken,
+            container: 'map', // El ID del div en tu HTML
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [-75.681, 4.533],
+            zoom: 13
+        });
+
+        this.mapa.on('load', () => {
+            console.log('Mapbox map loaded event fired');
+            this.updateMarkers();
+        });
+
+        this.mapa.on('error', (e) => {
+            console.error('Mapbox error:', e);
+        });
     }
 
     ngOnInit(): void {
@@ -52,7 +101,8 @@ export class MapViewComponent implements AfterViewInit, OnDestroy, OnInit {
 
 
     ngAfterViewInit() {
-
+        console.log("inicio mapa" + this.mapa);
+        console.log(environment.mapboxToken);
         this.mapa = new mapboxgl.Map({
             accessToken: environment.mapboxToken,
             container: 'map',
@@ -154,14 +204,14 @@ export class MapViewComponent implements AfterViewInit, OnDestroy, OnInit {
                 this.categories = categories;
                 // Remove cuando se desee
                 if (categories.length == 0) {
-                    const category: Category = { name: 'Mascota perdida', description: 'Mascota perdido en la calle'};
-                    this.categoryService.addCategory(category).subscribe(category=>console.log(category.id)); // Filtra los reportes por la primera categoría
-                    const category2: Category = { name: 'Robo', description: 'Robo armado'};
-                    this.categoryService.addCategory(category2).subscribe(category=>console.log(category.id)); // Filtra los reportes por la primera categoría
-                    const category3: Category = { name: 'Venta', description: 'Venta de elmentos'};
-                    this.categoryService.addCategory(category3).subscribe(category=>console.log(category.id)); // Filtra los reportes por la primera categoría
-                    const category4: Category = { name: 'Comunicado', description: 'Comunicados de la ciudad'};
-                    this.categoryService.addCategory(category4).subscribe(category=>console.log(category.id)); // Filtra los reportes por la primera categoría
+                    const category: Category = {name: 'Mascota perdida', description: 'Mascota perdido en la calle'};
+                    this.categoryService.addCategory(category).subscribe(category => console.log(category.id)); // Filtra los reportes por la primera categoría
+                    const category2: Category = {name: 'Robo', description: 'Robo armado'};
+                    this.categoryService.addCategory(category2).subscribe(category => console.log(category.id)); // Filtra los reportes por la primera categoría
+                    const category3: Category = {name: 'Venta', description: 'Venta de elmentos'};
+                    this.categoryService.addCategory(category3).subscribe(category => console.log(category.id)); // Filtra los reportes por la primera categoría
+                    const category4: Category = {name: 'Comunicado', description: 'Comunicados de la ciudad'};
+                    this.categoryService.addCategory(category4).subscribe(category => console.log(category.id)); // Filtra los reportes por la primera categoría
                 }
             },
             error: (error) => {

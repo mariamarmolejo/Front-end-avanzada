@@ -4,7 +4,5 @@ import { AppComponent } from './app/app.component';
 import { environment } from './environments/environment';
 
 
-console.log('TOKEN:', environment.mapboxToken);
-
 bootstrapApplication(AppComponent, appConfig)
   .catch((err) => console.error(err));
