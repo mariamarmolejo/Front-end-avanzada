@@ -12,17 +12,9 @@ import {CommonModule, isPlatformBrowser, NgFor, NgIf} from '@angular/common'; //
 import {environment} from '../../../../environments/environment';
 import mapboxgl, {Marker} from 'mapbox-gl';
 import {CategoryService} from "../../../core/services/category.service";
-import {Category} from "../../../core/models/category.model"; // Asegúrate de importar Marker
-
-// Define una interfaz para tus reportes para mayor claridad
-interface Report {
-    id: number; // Añade un ID único si es posible
-    nombre: string;
-    category: string; // Añade la categoría
-    lat: number;
-    lng: number;
-    marker?: Marker; // Para mantener una referencia al marcador del mapa
-}
+import {Category} from "../../../core/models/category.model";
+import {ReportService} from "../../../core/services/report.service";
+import {Report} from "../../../core/models/report.model"; // Asegúrate de importar Marker
 
 @Component({
     selector: 'app-map-view',
@@ -37,21 +29,24 @@ export class MapViewComponent implements AfterViewInit, OnDestroy, OnInit {
     private platformId = inject(PLATFORM_ID); // Inyecta PLATFORM_ID
 
     // Datos de ejemplo con categoría e ID
-    allReports: Report[] = [
-        {id: 1, nombre: 'Perro perdido - Firulais', category: 'Mascota perdida', lat: 4.533, lng: -75.681},
+    allReports: Report[] = [];
+    /**    {id: 1, nombre: 'Perro perdido - Firulais', category: 'Mascota perdida', lat: 4.533, lng: -75.681},
         {id: 2, nombre: 'Intento de robo calle 10', category: 'Robo', lat: 4.535, lng: -75.683},
         {id: 3, nombre: 'Venta empanadas Parque Sucre', category: 'Venta', lat: 4.537, lng: -75.685},
         {id: 4, nombre: 'Zapatos en oferta Cra 14', category: 'Venta', lat: 4.539, lng: -75.687},
         {id: 5, nombre: 'Cierre vial por evento', category: 'Comunicado', lat: 4.541, lng: -75.689}
         // ... más reportes
-    ];
+    ];*/
     categories: Category[] = [];
+
 
     filteredReports: Report[] = []; // Los reportes que se muestran en la lista y mapa
     selectedCategory: string = ''; // La categoría seleccionada
 
     // Inyecta ChangeDetectorRef para notificar cambios cuando actualizas filteredReports
-    constructor(private cdRef: ChangeDetectorRef, private categoryService: CategoryService) {
+    constructor(private cdRef: ChangeDetectorRef,
+                private categoryService: CategoryService,
+                private reportService: ReportService) {
 
         afterNextRender(() => {
             // Asegúrate de que esto se ejecuta SOLO en el navegador
@@ -95,14 +90,12 @@ export class MapViewComponent implements AfterViewInit, OnDestroy, OnInit {
 
     ngOnInit(): void {
         this.loadCategories()// Obtiene las categorías
-        this.filteredReports = [...this.allReports]; // Inicialmente mostrar todos
+        this.loadReport();
 
     }
 
 
     ngAfterViewInit() {
-        console.log("inicio mapa" + this.mapa);
-        console.log(environment.mapboxToken);
         this.mapa = new mapboxgl.Map({
             accessToken: environment.mapboxToken,
             container: 'map',
@@ -129,7 +122,7 @@ export class MapViewComponent implements AfterViewInit, OnDestroy, OnInit {
         if (!category) {
             this.filteredReports = [...this.allReports]; // Muestra todos si no hay categoría
         } else {
-            this.filteredReports = this.allReports.filter(report => report.category === category);
+            this.filteredReports = this.allReports.filter(report => report.categoryList && report.categoryList.some(cat => cat.name === category));
         }
         this.updateMarkers(); // Actualiza los marcadores en el mapa
         this.cdRef.detectChanges(); // Notifica a Angular sobre el cambio en filteredReports
@@ -140,12 +133,11 @@ export class MapViewComponent implements AfterViewInit, OnDestroy, OnInit {
         // 1. Limpiar marcadores anteriores
         this.markers.forEach(marker => marker.remove());
         this.markers = []; // Vaciar el array
-
         // 2. Añadir marcadores para los reportes filtrados
         this.filteredReports.forEach(report => {
             const marker = new mapboxgl.Marker()
-                .setLngLat([report.lng, report.lat])
-                .setPopup(new mapboxgl.Popup().setHTML(`<h6>${report.nombre}</h6><p>${report.category}</p>`)) // Popup opcional
+                .setLngLat([report.longitude, report.latitude])
+                .setPopup(new mapboxgl.Popup().setHTML(`<h6>${report.title}</h6><p>${report.description}</p>`)) // Popup opcional
                 .addTo(this.mapa);
             this.markers.push(marker); // Guarda la referencia
         });
@@ -154,14 +146,14 @@ export class MapViewComponent implements AfterViewInit, OnDestroy, OnInit {
         if (this.filteredReports.length > 0) {
             const bounds = new mapboxgl.LngLatBounds();
             this.filteredReports.forEach(report => {
-                bounds.extend([report.lng, report.lat]);
+                bounds.extend([report.longitude, report.latitude]);
             });
             this.mapa.fitBounds(bounds, {padding: 50, maxZoom: 15});
         } else if (this.allReports.length > 0) {
             // Si no hay filtros pero sí reportes, ajusta a todos
             const bounds = new mapboxgl.LngLatBounds();
             this.allReports.forEach(report => {
-                bounds.extend([report.lng, report.lat]);
+                bounds.extend([report.longitude, report.latitude]);
             });
             this.mapa.fitBounds(bounds, {padding: 50, maxZoom: 15});
         }
@@ -170,13 +162,13 @@ export class MapViewComponent implements AfterViewInit, OnDestroy, OnInit {
     // Función para centrar el mapa en un reporte al hacer clic en la lista
     flyToReport(report: Report) {
         this.mapa.flyTo({
-            center: [report.lng, report.lat],
+            center: [report.longitude, report.latitude],
             zoom: 15 // O el zoom que prefieras
         });
         // Opcional: Abrir el popup del marcador correspondiente
         const reportMarker = this.markers.find(m => {
             const markerLngLat = m.getLngLat();
-            return markerLngLat.lng === report.lng && markerLngLat.lat === report.lat;
+            return markerLngLat.lng === report.longitude && markerLngLat.lat === report.latitude;
         });
         reportMarker?.togglePopup();
     }
@@ -213,6 +205,18 @@ export class MapViewComponent implements AfterViewInit, OnDestroy, OnInit {
                     const category4: Category = {name: 'Comunicado', description: 'Comunicados de la ciudad'};
                     this.categoryService.addCategory(category4).subscribe(category => console.log(category.id)); // Filtra los reportes por la primera categoría
                 }
+            },
+            error: (error) => {
+                console.error('Error al obtener categorías:', error);
+            }
+        });
+    }
+
+    loadReport() {
+        this.reportService.getMyReports().subscribe({
+            next: (reports) => {
+                this.allReports = reports.content;
+                this.filteredReports = [...this.allReports]; // Inicialmente mostrar todos
             },
             error: (error) => {
                 console.error('Error al obtener categorías:', error);

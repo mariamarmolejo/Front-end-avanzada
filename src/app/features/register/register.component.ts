@@ -5,7 +5,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 import mapboxgl from 'mapbox-gl';
 import { NgIf } from '@angular/common';
 import { environment } from '../../../environments/environment';
-import { AuthService } from '../../../app/core/services/auth.service';
+import { AuthService } from '../../core/services/auth.service';
 import { UserRegistration } from '../../core/models/user-registration.model';
 // Import de Material
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -84,6 +84,8 @@ export class RegisterComponent implements OnInit, AfterViewInit {
         latitude: lngLat.lat,
         longitude: lngLat.lng
       });
+      console.log("latitud:" +lngLat.lat);
+      console.log("longitud:" +lngLat.lng);
 
       if (this.marker) {
         this.marker.setLngLat(lngLat);

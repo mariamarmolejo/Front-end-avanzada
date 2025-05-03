@@ -1,0 +1,150 @@
+.report-container {
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 25px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.report-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.form-field {
+    margin-bottom: 20px;
+}
+
+.form-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.form-field input[type="text"],
+.form-field textarea,
+.form-field select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Incluye padding y borde en el ancho total */
+}
+
+.form-field textarea {
+    resize: vertical; /* Permite redimensionar verticalmente */
+}
+
+.form-field select[multiple] {
+    min-height: 100px; /* Altura mínima para selects múltiples */
+}
+
+
+.error-message {
+    color: #e74c3c; /* Rojo para errores */
+    font-size: 0.9em;
+    margin-top: 5px;
+}
+
+/* Estilos barra de búsqueda mapa (similar a register) */
+.search-bar-map {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    z-index: 1; /* Debe estar sobre el mapa */
+    display: flex;
+    background: white;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+.search-bar-map input {
+    border: none;
+    padding: 8px;
+    min-width: 180px;
+    border-radius: 4px 0 0 4px;
+}
+.search-bar-map button {
+    border: none;
+    background: #79b4d8; /* Azul medio */
+    color: white;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 0 4px 4px 0;
+    font-size: 16px;
+}
+.search-bar-map button:hover {
+    background: #1e3a5f; /* Azul oscuro */
+}
+
+/* Estilos para previsualización de imágenes */
+.image-previews {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+.preview-item {
+    position: relative;
+    border: 1px solid #ddd;
+    padding: 5px;
+    border-radius: 4px;
+}
+.preview-item img {
+    display: block;
+    max-width: 100px; /* Tamaño máximo de la miniatura */
+    max-height: 100px;
+    object-fit: cover; /* Mantiene la relación de aspecto */
+}
+.remove-preview-btn {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: rgba(231, 76, 60, 0.8); /* Rojo semitransparente */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    line-height: 18px; /* Ajusta para centrar la '✖' */
+    text-align: center;
+    cursor: pointer;
+    padding: 0;
+}
+.remove-preview-btn:hover {
+    background: rgba(192, 57, 43, 1); /* Rojo más oscuro */
+}
+
+
+/* Botón de envío */
+.submit-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #79b4d8; /* Azul medio */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.submit-button:hover:not(:disabled) {
+    background-color: #1e3a5f; /* Azul oscuro */
+}
+
+.submit-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Estilo para contenedor de mapa */
+#map_report {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}

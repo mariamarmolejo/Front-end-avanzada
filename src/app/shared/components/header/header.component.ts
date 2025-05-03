@@ -43,4 +43,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
         }
     });
   }
+
+    register() {
+        console.log("call register");
+        this.router.navigate(['/report/new']);
+
+    }
 }

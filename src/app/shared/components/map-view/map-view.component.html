@@ -13,8 +13,8 @@
 
         <ul class="report-list">
             <li *ngFor="let report of filteredReports" (click)="flyToReport(report)">
-                <strong>{{ report.nombre }}</strong> ({{ report.category }})
-                <p>Lat: {{ report.lat }}, Lng: {{ report.lng }}</p>
+                <strong>{{ report.title }}</strong> ({{ report.categoryList[0].name }})
+                <p>Lat: {{ report.latitude }}, Lng: {{ report.longitude }}</p>
             </li>
             <li *ngIf="filteredReports.length === 0">
                 No hay reportes para mostrar con el filtro actual.

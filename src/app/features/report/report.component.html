@@ -1,0 +1,69 @@
+<div class="report-container">
+    <h2>{{ isEditMode ? 'Editar Reporte' : 'Crear Nuevo Reporte' }}</h2>
+
+    <form [formGroup]="reportForm" (ngSubmit)="onSubmit()" novalidate>
+
+        <div class="form-field">
+            <label for="title">Título:</label>
+            <input type="text" id="title" formControlName="title" placeholder="Ej: Perro perdido cerca del parque">
+            <div *ngIf="title?.invalid && (title?.dirty || title?.touched)" class="error-message">
+                <span *ngIf="title?.errors?.['required']">El título es obligatorio.</span>
+                <span *ngIf="title?.errors?.['minlength']">El título debe tener al menos 5 caracteres.</span>
+                <span *ngIf="title?.errors?.['maxlength']">El título no puede exceder los 100 caracteres.</span>
+            </div>
+        </div>
+
+        <div class="form-field">
+            <label for="description">Descripción:</label>
+            <textarea id="description" formControlName="description" rows="4" placeholder="Describe detalladamente lo que sucede..."></textarea>
+            <div *ngIf="description?.invalid && (description?.dirty || description?.touched)" class="error-message">
+                <span *ngIf="description?.errors?.['required']">La descripción es obligatoria.</span>
+                <span *ngIf="description?.errors?.['minlength']">La descripción debe tener al menos 10 caracteres.</span>
+            </div>
+        </div>
+
+        <div class="form-field">
+            <label for="categories">Categorías:</label>
+            <select id="categories" formControlName="categoryIds" >
+                <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+            </select>
+            <div *ngIf="categoryIds?.invalid && (categoryIds?.dirty || categoryIds?.touched)" class="error-message">
+                <span *ngIf="categoryIds?.errors?.['required'] || categoryIds?.errors?.['minlength']">Debes seleccionar al menos una categoría.</span>
+            </div>
+        </div>
+
+        <div class="form-field">
+            <label>Ubicación:</label>
+            <div class="search-bar-map">
+                <input type="text" #searchInput placeholder="Buscar dirección..." (keyup.enter)="searchAddress(searchInput.value)" />
+                <button type="button" (click)="searchAddress(searchInput.value)">🔍</button>
+            </div>
+            <div id="map_user" style="width:100%; height:400px;"></div>
+            <div *ngIf="(latitude?.invalid || longitude?.invalid) && (latitude?.touched || longitude?.touched)" class="error-message">
+                <span>Debes seleccionar una ubicación en el mapa.</span>
+            </div>
+        </div>
+
+        <div class="form-field">
+            <label for="selectedFile">Imágenes (al menos 1):</label>
+            <input type="file" id="selectedFile"  formControlName="selectedFile" accept="image/*" (change)="onFileSelected($event)">
+            <div class="image-previews" *ngIf="imagePreview">
+                <div  class="preview-item">
+                    <img [src]="imagePreview" alt="Previsualización">
+                    <button type="button" class="remove-preview-btn" (click)="removePreview(0)" title="Quitar imagen">✖</button>
+                </div>
+            </div>
+            <div *ngIf="!isEditMode && !selectedFile && reportForm.touched" class="error-message">
+                <span>Debes subir al menos una imagen.</span>
+            </div>
+        </div>
+
+
+        <button type="submit" class="submit-button" [disabled]="reportForm.invalid || isLoading || (!isEditMode && !selectedFile)">
+            <span *ngIf="!isLoading">{{ isEditMode ? 'Actualizar Reporte' : 'Crear Reporte' }}</span>
+            <span *ngIf="isLoading">
+          {{ isEditMode ? 'Actualizando...' : 'Creando...' }}
+       </span>
+        </button>
+    </form>
+</div>
