@@ -6,6 +6,7 @@ import {Report} from '../models/report.model';
 import {PaginatedReportResponse} from "../models/page.model";
 import {tap} from "rxjs/operators";
 import {ImageService} from "./image.service";
+import {ImageUploadResponse} from "../models/Image.upload.request";
 
 @Injectable({
     providedIn: 'root'
@@ -30,10 +31,10 @@ export class ReportService {
     }
 
     /**
-     * Obtiene los reportes del usuario autenticado.
+     * Obtiene los reportes cerca al usuario autenticado.
      * (El backend debe filtrar por usuario basado en la sesión/token).
      */
-    getMyReports(): Observable<PaginatedReportResponse> {
+    getReports(): Observable<PaginatedReportResponse> {
         let params = new HttpParams();
 
         params = params.set('latitud', '-75');
@@ -56,13 +57,29 @@ export class ReportService {
     }
 
     /**
+     * Obtiene un reporte específico por ID.
+     */
+    getAllImagesReportById(id: string): Observable<ImageUploadResponse[]> {
+        return this.http.get<ImageUploadResponse[]>(`${this.apiUrl}/${id}/images`).pipe(
+            catchError(this.handleError)
+        );
+    }
+
+    /**
      * Actualiza un reporte existente.
      * TODO: Implementar manejo de añadir/eliminar imágenes si es necesario.
      */
-    updateReport(id: string, reportData: Partial<ReportRequest>): Observable<Report> {
-        // NOTA: La actualización de imágenes requeriría una lógica más compleja,
-        // posiblemente usando FormData similar a createReport, o endpoints específicos
-        // para añadir/eliminar imágenes. Esta implementación básica solo actualiza los datos.
+    updateReport(id: string, reportData: Partial<ReportRequest>, image: File | null): Observable<Report> {
+        console.log(reportData)
+        if (image) {
+            this.getAllImagesReportById(id).subscribe((images) => {
+                images.forEach((image) => {
+                    this.imageService.deleteImage(image.id);
+                });
+                this.imageService.registerImage(image, {id} as Report);
+
+            });
+        }
         return this.http.put<Report>(`${this.apiUrl}/${id}`, reportData).pipe(
             catchError(this.handleError)
         );

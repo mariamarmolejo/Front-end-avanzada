@@ -39,4 +39,15 @@ export class ImageService {
             }
         );
     }
+
+    deleteImage(imageId: string): void {
+        this.http.delete(`${this.apiUrl}/${imageId}`).subscribe({
+            next: (response) => {
+                console.log('Imagen eliminada:', response);
+            },
+            error: (error) => {
+                console.error('Error eliminando la imagen:', error);
+            }
+        });
+    }
 }

@@ -52,7 +52,6 @@ export class RegisterComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    mapboxgl.accessToken = environment.mapboxToken;
   }
 
   ngAfterViewInit() {}
@@ -71,7 +70,8 @@ export class RegisterComponent implements OnInit, AfterViewInit {
       style: 'mapbox://styles/mapbox/streets-v11',
       center: [-75.681, 4.533],
       zoom: 13,
-      attributionControl: false
+      attributionControl: false,
+      accessToken : environment.mapboxToken
     });
 
     this.map.on('load', () => {
@@ -84,8 +84,6 @@ export class RegisterComponent implements OnInit, AfterViewInit {
         latitude: lngLat.lat,
         longitude: lngLat.lng
       });
-      console.log("latitud:" +lngLat.lat);
-      console.log("longitud:" +lngLat.lng);
 
       if (this.marker) {
         this.marker.setLngLat(lngLat);

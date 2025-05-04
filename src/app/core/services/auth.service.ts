@@ -59,7 +59,8 @@ export class AuthService {
 
     private deleteSession = () => {
         this.authStatus.next(false);
-        localStorage.removeItem('usuario');
+        if (typeof localStorage !== 'undefined')
+            localStorage.removeItem('usuario');
     }
 
     /**

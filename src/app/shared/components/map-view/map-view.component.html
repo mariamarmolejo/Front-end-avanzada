@@ -12,9 +12,14 @@
         </div>
 
         <ul class="report-list">
-            <li *ngFor="let report of filteredReports" (click)="flyToReport(report)">
-                <strong>{{ report.title }}</strong> ({{ report.categoryList[0].name }})
-                <p>Lat: {{ report.latitude }}, Lng: {{ report.longitude }}</p>
+            <!-- Updated li element -->
+            <li *ngFor="let report of filteredReports">
+                <div (click)="flyToReport(report)" style="cursor: pointer;"> <!-- Make the text clickable for flyTo -->
+                    <strong>{{ report.title }}</strong> ({{ report.categoryList[0].name || 'Sin categoría' }})
+                    <p>Lat: {{ report.latitude }}, Lng: {{ report.longitude }}</p>
+                </div>
+                <!-- Add Edit Button -->
+                <button (click)="editReport(report.id)" class="edit-button">Editar</button>
             </li>
             <li *ngIf="filteredReports.length === 0">
                 No hay reportes para mostrar con el filtro actual.

@@ -1,18 +1,9 @@
-import {
-    AfterViewInit,
-    ChangeDetectorRef,
-    Component,
-    inject,
-    OnDestroy,
-    OnInit,
-    PLATFORM_ID
-} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, PLATFORM_ID} from '@angular/core';
 import {CommonModule, isPlatformBrowser, NgFor, NgIf} from '@angular/common';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {ActivatedRoute, Router, RouterModule} from '@angular/router';
 import {MatSnackBar} from '@angular/material/snack-bar';
 import mapboxgl, {LngLat, LngLatLike} from 'mapbox-gl';
-import {HttpClient, HttpParams} from '@angular/common/http';
 import {Subscription} from 'rxjs';
 import {Category} from "../../core/models/category.model";
 import {ReportService} from "../../core/services/report.service";
@@ -56,7 +47,6 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
                 private snackBar: MatSnackBar,
                 private router: Router,
                 private route: ActivatedRoute,
-                private http: HttpClient,
                 private cdRef: ChangeDetectorRef) {
         this.reportForm = this.fb.group({
             title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
@@ -118,8 +108,12 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
                     latitude: report.latitude,
                     longitude: report.longitude
                 });
-                // Poblar previsualizaciones de imágenes existentes (simplificado)  TODO
-                //this.imagePreview = report.images.map(img => img.url);
+
+                this.reportForm.get('selectedFile')?.clearValidators();
+                this.reportForm.get('selectedFile')?.updateValueAndValidity();
+
+                // Poblar previsualizaciones de imágenes existentes (simplificado)
+                this.loadImages(report.id);
                 this.isLoading = false;
                 // Inicializar mapa DESPUÉS de tener lat/lng
                 setTimeout(() => this.initializeMap([report.longitude, report.latitude]), 100);
@@ -165,7 +159,8 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
             });
 
             this.map.on('click', ({lngLat}) => {
-                this.updateMarkerAndForm(lngLat);
+                if (!this.isEditMode)
+                    this.updateMarkerAndForm(lngLat);
             });
 
             this.map.on('error', (e) => {
@@ -179,35 +174,6 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    searchAddress(query: string): void {
-        if (!query || !this.map) return;
-
-        const mapboxToken = environment.mapboxToken;
-        const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json`;
-        const params = new HttpParams()
-            .set('access_token', mapboxToken)
-            .set('country', 'CO')
-            .set('proximity', '-75.681,4.533')
-            .set('limit', '1');
-
-        this.http.get<any>(url, {params}).subscribe({
-            next: (data) => {
-                if (data.features && data.features.length > 0) {
-                    const [lng, lat] = data.features[0].center;
-                    const lngLat = new LngLat(lng, lat);
-                    this.map.flyTo({center: lngLat, zoom: 16});
-                    this.updateMarkerAndForm(lngLat);
-                } else {
-                    this.snackBar.open('Dirección no encontrada.', 'Cerrar', {duration: 3000});
-                }
-            },
-            error: (err) => {
-                console.error('Error en Geocoding:', err);
-                this.snackBar.open('Error al buscar la dirección.', 'Cerrar', {duration: 3000});
-            }
-        });
-    }
-
     updateMarkerAndForm(lngLat: mapboxgl.LngLat): void {
         this.reportForm.patchValue({
             latitude: lngLat.lat,
@@ -217,17 +183,18 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.marker) {
             this.marker.setLngLat(lngLat);
         } else {
-            this.marker = new mapboxgl.Marker({draggable: true})
+            this.marker = new mapboxgl.Marker({draggable: !this.isEditMode})
                 .setLngLat(lngLat)
                 .addTo(this.map);
-
-            this.marker.on('dragend', () => {
-                const newLngLat = this.marker.getLngLat();
-                this.reportForm.patchValue({
-                    latitude: newLngLat.lat,
-                    longitude: newLngLat.lng
+            if (!this.isEditMode) {
+                this.marker.on('dragend', () => {
+                    const newLngLat = this.marker.getLngLat();
+                    this.reportForm.patchValue({
+                        latitude: newLngLat.lat,
+                        longitude: newLngLat.lng
+                    });
                 });
-            });
+            }
         }
     }
 
@@ -293,18 +260,19 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
         if (this.isEditMode && this.reportId) {
+            console.log(this.file)
             // --- Lógica de Edición ---
             // Nota: La actualización de imágenes no está implementada aquí.
             // Necesitarías lógica adicional para enviar nuevas imágenes y/o IDs de imágenes a eliminar.
-            this.reportService.updateReport(this.reportId, reportRequest).subscribe({
+            this.reportService.updateReport(this.reportId, reportRequest, this.file).subscribe({
                 next: () => {
                     this.isLoading = false;
-                    this.snackBar.open('Reporte actualizado con éxito.', 'Cerrar', {duration: 3000});
+                    this.snackBar.open('Reporte actualizado con éxito.', 'Cerrar', {duration: 30});
                     this.router.navigate(['/map']); // O a la lista de reportes
                 },
                 error: (err) => {
                     this.isLoading = false;
-                    this.snackBar.open('Error al actualizar el reporte.', 'Cerrar', {duration: 3000});
+                    this.snackBar.open('Error al actualizar el reporte.', 'Cerrar', {duration: 30});
                 }
             });
         } else {
@@ -350,5 +318,20 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
 
     get selectedFile() {
         return this.reportForm.get('selectedFile');
+    }
+
+    private loadImages(reportId: string | undefined): void {
+        if (!reportId) return;
+        this.reportService.getAllImagesReportById(reportId).subscribe({
+                next: (report) => {
+                    this.imagePreview = report[0].imageUrl;
+                    console.log("Imagenes cargadas", this.imagePreview);
+                },
+                error: (err) => {
+                    this.snackBar.open('Error al cargar las imágenes del reporte.', 'Cerrar', {duration: 3000});
+                }
+            }
+        )
+
     }
 }

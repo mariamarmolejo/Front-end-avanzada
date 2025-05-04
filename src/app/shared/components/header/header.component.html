@@ -1,14 +1,14 @@
 <!-- Botón de menú (☰) -->
 <div class="sidebar" [class.active]="isOpen">
     <ul>
-      <li><a routerLink="/">Inicio</a></li>
+      <li><a (click)="navigate('/map')">Reportes</a></li>
       <li><a href="#">Acerca de Compañía</a></li>
       <div *ngIf="!isLoggedIn">
         <li><a routerLink="/register">Crear cuenta</a></li>
       </div>
       <div *ngIf="isLoggedIn">
         <li><a routerLink="/account">Mi Cuenta</a></li>
-        <li><a (click)="register()">Crear reporte</a></li>
+        <li><a (click)="navigate('/report/new')">Crear reporte</a></li>
         <li><a (click)="logout()">Cerrar Sesión</a></li>
       </div>
     </ul>

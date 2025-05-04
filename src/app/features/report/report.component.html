@@ -34,10 +34,6 @@
 
         <div class="form-field">
             <label>Ubicación:</label>
-            <div class="search-bar-map">
-                <input type="text" #searchInput placeholder="Buscar dirección..." (keyup.enter)="searchAddress(searchInput.value)" />
-                <button type="button" (click)="searchAddress(searchInput.value)">🔍</button>
-            </div>
             <div id="map_user" style="width:100%; height:400px;"></div>
             <div *ngIf="(latitude?.invalid || longitude?.invalid) && (latitude?.touched || longitude?.touched)" class="error-message">
                 <span>Debes seleccionar una ubicación en el mapa.</span>

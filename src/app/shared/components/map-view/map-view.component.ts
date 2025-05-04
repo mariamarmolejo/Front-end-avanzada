@@ -1,9 +1,11 @@
 import {
-    afterNextRender, AfterRenderPhase,
+    afterNextRender,
+    AfterRenderPhase,
     AfterViewInit,
     ChangeDetectorRef,
     Component,
     inject,
+    NgZone,
     OnDestroy,
     OnInit,
     PLATFORM_ID
@@ -14,7 +16,8 @@ import mapboxgl, {Marker} from 'mapbox-gl';
 import {CategoryService} from "../../../core/services/category.service";
 import {Category} from "../../../core/models/category.model";
 import {ReportService} from "../../../core/services/report.service";
-import {Report} from "../../../core/models/report.model"; // Asegúrate de importar Marker
+import {Report} from "../../../core/models/report.model";
+import {Router} from "@angular/router"; // Asegúrate de importar Marker
 
 @Component({
     selector: 'app-map-view',
@@ -31,12 +34,12 @@ export class MapViewComponent implements AfterViewInit, OnDestroy, OnInit {
     // Datos de ejemplo con categoría e ID
     allReports: Report[] = [];
     /**    {id: 1, nombre: 'Perro perdido - Firulais', category: 'Mascota perdida', lat: 4.533, lng: -75.681},
-        {id: 2, nombre: 'Intento de robo calle 10', category: 'Robo', lat: 4.535, lng: -75.683},
-        {id: 3, nombre: 'Venta empanadas Parque Sucre', category: 'Venta', lat: 4.537, lng: -75.685},
-        {id: 4, nombre: 'Zapatos en oferta Cra 14', category: 'Venta', lat: 4.539, lng: -75.687},
-        {id: 5, nombre: 'Cierre vial por evento', category: 'Comunicado', lat: 4.541, lng: -75.689}
-        // ... más reportes
-    ];*/
+     {id: 2, nombre: 'Intento de robo calle 10', category: 'Robo', lat: 4.535, lng: -75.683},
+     {id: 3, nombre: 'Venta empanadas Parque Sucre', category: 'Venta', lat: 4.537, lng: -75.685},
+     {id: 4, nombre: 'Zapatos en oferta Cra 14', category: 'Venta', lat: 4.539, lng: -75.687},
+     {id: 5, nombre: 'Cierre vial por evento', category: 'Comunicado', lat: 4.541, lng: -75.689}
+     // ... más reportes
+     ];*/
     categories: Category[] = [];
 
 
@@ -46,7 +49,8 @@ export class MapViewComponent implements AfterViewInit, OnDestroy, OnInit {
     // Inyecta ChangeDetectorRef para notificar cambios cuando actualizas filteredReports
     constructor(private cdRef: ChangeDetectorRef,
                 private categoryService: CategoryService,
-                private reportService: ReportService) {
+                private reportService: ReportService,
+                private router: Router) {
 
         afterNextRender(() => {
             // Asegúrate de que esto se ejecuta SOLO en el navegador
@@ -54,7 +58,7 @@ export class MapViewComponent implements AfterViewInit, OnDestroy, OnInit {
                 console.log('afterNextRender: Initializing Mapbox');
                 this.initializeMap();
             }
-        }, { phase: AfterRenderPhase.Write }); // <-- USA EL ENUMERADOR
+        }, {phase: AfterRenderPhase.Write}); // <-- USA EL ENUMERADOR
         // ---------------------------------------------
     }
 
@@ -213,7 +217,7 @@ export class MapViewComponent implements AfterViewInit, OnDestroy, OnInit {
     }
 
     loadReport() {
-        this.reportService.getMyReports().subscribe({
+        this.reportService.getReports().subscribe({
             next: (reports) => {
                 this.allReports = reports.content;
                 this.filteredReports = [...this.allReports]; // Inicialmente mostrar todos
@@ -223,4 +227,20 @@ export class MapViewComponent implements AfterViewInit, OnDestroy, OnInit {
             }
         });
     }
+
+    /**
+     * Navigates to the report editing page.
+     * @param reportId The ID of the report to edit.
+     */
+    editReport(reportId: string | undefined) {
+        console.log("editReport called with ID:", reportId);
+        if(reportId) {
+            console.log('Navigating to edit report with ID:', reportId);
+            // Assuming your edit route is '/report/edit/:id'
+            // Adjust the path if your route is different
+            this.router.navigate(['/report/edit', reportId]);
+
+        }
+    }
+
 }

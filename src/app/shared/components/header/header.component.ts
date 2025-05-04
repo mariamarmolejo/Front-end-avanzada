@@ -49,4 +49,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.router.navigate(['/report/new']);
 
     }
+
+    navigate(path: string) {
+        this.router.navigate([path]);
+        this.isOpen = false;
+    }
 }
