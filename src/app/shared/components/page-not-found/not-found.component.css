@@ -1,0 +1,55 @@
+:host {
+  display: block;
+}
+
+.not-found-container {
+  max-width: 400px;
+  margin: 100px auto;
+  padding: 40px;
+  text-align: center;
+  background-color: var(--input-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.icon-wrapper {
+  font-size: 60px;
+  color: var(--primary-accent);
+  margin-bottom: 20px;
+}
+
+.not-found-container h1 {
+  font-size: 26px;
+  color: var(--primary-dark);
+  margin-bottom: 10px;
+}
+
+.not-found-container p {
+  color: #555;
+  margin-bottom: 30px;
+  font-size: 16px;
+}
+
+/* Botón reutilizable tipo submit-button */
+.submit-button {
+  width: 100%;
+  padding: 12px;
+  background: var(--primary-accent);
+  color: #000000;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.submit-button:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.submit-button i {
+  margin-right: 8px;
+}

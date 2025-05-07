@@ -6,7 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import {provideHttpClient, HTTP_INTERCEPTORS, withInterceptorsFromDi} from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { CredentialsInterceptor } from './interceptors/credentials.interceptor';
+//import { CredentialsInterceptor } from './interceptors/credentials.interceptor';
 
 
 export const appConfig: ApplicationConfig = {
@@ -14,11 +14,11 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withInterceptorsFromDi()),
-    {
+     /* {
       provide: HTTP_INTERCEPTORS,
       useClass: CredentialsInterceptor,
       multi: true // Es 'multi: true' porque puede haber varios interceptors
-    },
+    }, */
     provideClientHydration(withEventReplay()),
     importProvidersFrom(
       ReactiveFormsModule,

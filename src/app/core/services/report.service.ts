@@ -7,6 +7,7 @@ import {PaginatedReportResponse} from "../models/page.model";
 import {tap} from "rxjs/operators";
 import {ImageService} from "./image.service";
 import {ImageUploadResponse} from "../models/Image.upload.request";
+import { Session } from 'node:inspector';
 
 @Injectable({
     providedIn: 'root'
@@ -23,7 +24,10 @@ export class ReportService {
      */
     createReport(reportData: ReportRequest, image: File): Observable<Report> {
 
-        return this.http.post<Report>(this.apiUrl, reportData).pipe(
+        return this.http.post<Report>(this.apiUrl, 
+            reportData,
+            {withCredentials: true}
+        ).pipe(
             tap((response: Report) => {
                 console.log('Reporte creado:', response);
                 this.imageService.registerImage(image, response);
@@ -37,12 +41,13 @@ export class ReportService {
     getReports(): Observable<PaginatedReportResponse> {
         let params = new HttpParams();
 
-        params = params.set('latitud', '-75');
-        params = params.set('longitud', '4');
-        params = params.set('radio', '99990');
+        params = params.set('latitud', sessionStorage.getItem('lat') || '');
+        params = params.set('longitud', sessionStorage.getItem('lng') || '');
+        params = params.set('radio', sessionStorage.getItem('radiusKm') || '');
+
 
         // Asume que el endpoint /my-reports filtra por el usuario autenticado
-        return this.http.get<PaginatedReportResponse>(`${this.apiUrl}`, {params}).pipe(
+        return this.http.get<PaginatedReportResponse>(`${this.apiUrl}`, {params, withCredentials:true} ).pipe(
             catchError(this.handleError)
         );
     }

@@ -40,9 +40,9 @@
       type="button"
       class="submit-button"
       (click)="onLogin()"
-      [disabled]="registerForm.invalid"
-    >
-      Ingresar
+      [disabled]="registerForm.invalid || isSubmitting"
+    > <i *ngIf="isSubmitting" class="fas fa-spinner fa-spin me-2"></i>
+    {{ isSubmitting ? 'Ingresando...' : 'Ingresar' }}
     </button>
 
     <p class="register-link">
@@ -50,4 +50,15 @@
       <a routerLink="/register">Regístrate aquí</a>
     </p>
   </form>
+
+  <div class="resend-container"  *ngIf="showReetPassword">
+    <button
+      type="button"
+      class="resend-button"
+      (click)="sendCodePassword()"
+      [disabled]="isSubmitting || isSendPassword">
+      ¿Olvidaste tu contraseña?
+    </button>
+  </div>
+
 </div>

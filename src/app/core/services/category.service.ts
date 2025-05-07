@@ -15,7 +15,9 @@ export class CategoryService {
     }
 
     getAllActiveCategories(): Observable<Category[]> {
-        return this.http.get<Category[]>(this.apiUrl);
+        return this.http.get<Category[]>(this.apiUrl,
+            { withCredentials: true }
+        );
     }
     addCategory(category: Category): Observable<Category> {
         return this.http.post<Category>(this.apiUrl, category);

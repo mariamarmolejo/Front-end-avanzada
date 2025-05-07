@@ -5,68 +5,90 @@
 
     <!-- Paso 1: Datos -->
     <div *ngIf="!showMap">
+      <!-- Nombre completo -->
       <div class="field-group">
         <i class="icon fa fa-user"></i>
-        <input type="text"
-               placeholder="Nombre completo"
-               formControlName="fullName" />
+        <input type="text" placeholder="Nombre completo" formControlName="fullName" />
       </div>
-      <div *ngIf="fullNameInvalid" class="error-message">
+      <div *ngIf="hasError('fullName','required')" class="error-message">
         ⚠ El nombre completo es obligatorio.
       </div>
+      <div *ngIf="hasError('fullName','minlength')" class="error-message">
+        ⚠ El nombre debe tener al menos 8 caracteres.
+      </div>
+      <div *ngIf="hasError('fullName','maxlength')" class="error-message">
+        ⚠ El nombre no puede exceder 50 caracteres.
+      </div>
 
+      <!-- Email -->
       <div class="field-group">
         <i class="icon fa fa-envelope"></i>
-        <input type="email"
-               placeholder="Correo electrónico"
-               formControlName="email" />
+        <input type="email" placeholder="Correo electrónico" formControlName="email" />
       </div>
-      <div *ngIf="emailInvalid" class="error-message">
-        ⚠ El correo electrónico no es válido o está vacío.
+      <div *ngIf="hasError('email','required')" class="error-message">
+        ⚠ El correo electrónico es obligatorio.
+      </div>
+      <div *ngIf="hasError('email','email')" class="error-message">
+        ⚠ El formato de correo no es válido.
+      </div>
+      <div *ngIf="hasError('email','minlength')" class="error-message">
+        ⚠ El correo debe tener al menos 8 caracteres.
+      </div>
+      <div *ngIf="hasError('email','maxlength')" class="error-message">
+        ⚠ El correo no puede exceder 50 caracteres.
       </div>
 
+      <!-- Contraseña -->
       <div class="field-group">
         <i class="icon fa fa-lock"></i>
-        <input type="password"
-               placeholder="Contraseña"
-               formControlName="password" />
+        <input type="password" placeholder="Contraseña" formControlName="password" />
       </div>
-      <div *ngIf="passwordInvalid" class="error-message">
-        ⚠ La contraseña debe tener un dígito, una mayúscula y una minúscula.
+      <div *ngIf="hasError('password','required')" class="error-message">
+        ⚠ La contraseña es obligatoria.
+      </div>
+      <div *ngIf="hasError('password','pattern')" class="error-message">
+        ⚠ Debe incluir al menos un dígito, una mayúscula y una minúscula.
+      </div>
+      <div *ngIf="hasError('password','minlength')" class="error-message">
+        ⚠ La contraseña debe tener al menos 8 caracteres.
+      </div>
+      <div *ngIf="hasError('password','maxlength')" class="error-message">
+        ⚠ La contraseña no puede exceder 50 caracteres.
       </div>
 
+      <!-- Fecha de nacimiento -->
       <div class="field-group">
         <i class="icon fa fa-calendar"></i>
         <input type="date" formControlName="dateBirth" />
       </div>
-      <div *ngIf="dateBirthInvalid" class="error-message">
+      <div *ngIf="hasError('dateBirth','required')" class="error-message">
         ⚠ La fecha de nacimiento es obligatoria.
       </div>
+      <div *ngIf="hasError('dateBirth','futureDate')" class="error-message">
+        ⚠ La fecha de nacimiento no puede ser posterior a hoy.
+      </div>
 
+      <!-- Ciudad -->
       <div class="field-group">
         <i class="icon fa fa-city"></i>
-        <input type="text"
-               placeholder="Ciudad de residencia"
-               formControlName="cityOfResidence" />
+        <input type="text" placeholder="Ciudad de residencia" formControlName="cityOfResidence" />
       </div>
-      <div *ngIf="cityOfResidenceInvalid" class="error-message">
+      <div *ngIf="hasError('cityOfResidence','required')" class="error-message">
         ⚠ La ciudad de residencia es obligatoria.
       </div>
 
+      <!-- Radio de notificaciones -->
       <div class="field-group">
         <i class="icon fa fa-bullhorn"></i>
-        <input type="number"
-               placeholder="Radio de notificaciones (Km)"
-               formControlName="notificationRadiusKm" />
+        <input type="number" placeholder="Radio de notificaciones (Km)" formControlName="notificationRadiusKm" />
       </div>
-      <div *ngIf="notificationRadiusInvalid" class="error-message">
-        ⚠ El radio de notificaciones debe ser mayor a 0.
+      <div *ngIf="hasError('notificationRadiusKm','required')" class="error-message">
+        ⚠ El radio de notificaciones es obligatorio.
       </div>
-
-      <button type="button"
-              class="submit-button"
-              (click)="continueToMap()"
-              [disabled]="registerForm.invalid">
+      <div *ngIf="hasError('notificationRadiusKm','min')" class="error-message">
+        ⚠ El radio de notificaciones debe ser mayor que 0.
+      </div>
+      <button type="button" class="submit-button" (click)="continueToMap()" [disabled]="registerForm.invalid">
         Continuar
       </button>
     </div>
@@ -78,12 +100,16 @@
 
     <!-- Paso 2: Selección en el mapa -->
     <div *ngIf="showMap">
-      <div id="map_user" style="width:100%; height:400px;"></div>
+      <div id="map_user"></div>
       <p>Haz clic en el mapa para seleccionar tu ubicación.</p>
-      <button type="submit"
-              class="submit-button"
-              [disabled]="registerForm.invalid">
-        Registrar
+
+      <button type="submit" class="submit-button" [disabled]="registerForm.invalid || isSubmitting">
+        <i *ngIf="isSubmitting" class="fas fa-spinner fa-spin me-2"></i>
+        {{ isSubmitting ? 'Registrando...' : 'Registrar' }}
+      </button>
+
+      <button type="button" class="submit-button" (click)="backToForm()" [disabled]="isSubmitting">
+        ← Volver
       </button>
     </div>
   </form>

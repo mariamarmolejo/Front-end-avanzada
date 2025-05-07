@@ -21,9 +21,9 @@ export class ImageService {
                     if (report.id) {
                         const imageUploadRequest: ImageUploadRequest = {
                             imageUrl: response.url,
-                            reportId: report.id
+                            reportId: report.id,                            
                         };
-                        this.http.post(`${this.apiUrl}`, imageUploadRequest).subscribe({
+                        this.http.post(`${this.apiUrl}`, imageUploadRequest, {withCredentials: true}).subscribe({
                             next: (response) => {
                                 console.log('Imagen registrada en el reporte:', response);
                             },

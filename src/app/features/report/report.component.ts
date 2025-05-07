@@ -1,16 +1,17 @@
-import {AfterViewInit, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, PLATFORM_ID} from '@angular/core';
-import {CommonModule, isPlatformBrowser, NgFor, NgIf} from '@angular/common';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {ActivatedRoute, Router, RouterModule} from '@angular/router';
-import {MatSnackBar} from '@angular/material/snack-bar';
-import mapboxgl, {LngLat, LngLatLike} from 'mapbox-gl';
-import {Subscription} from 'rxjs';
-import {Category} from "../../core/models/category.model";
-import {ReportService} from "../../core/services/report.service";
-import {CategoryService} from "../../core/services/category.service";
-import {environment} from "../../../environments/environment";
-import {ReportRequest} from "../../core/models/report-request.model";
-import {Report} from '../../core/models/report.model';
+import { AfterViewInit, ChangeDetectorRef, Component, inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser, NgFor, NgIf } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import mapboxgl, { LngLat, LngLatLike } from 'mapbox-gl';
+import { Subscription } from 'rxjs';
+import { Category } from "../../core/models/category.model";
+import { ReportService } from "../../core/services/report.service";
+import { CategoryService } from "../../core/services/category.service";
+import { environment } from "../../../environments/environment";
+import { ReportRequest } from "../../core/models/report-request.model";
+import { Report } from '../../core/models/report.model';
+import { NotificationService } from '../../core/services/Notification.service';
 
 
 @Component({
@@ -39,21 +40,22 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
     private routeSub: Subscription | null = null;
     private initialReportData: Report | null = null; // Para modo edición
     private platformId = inject(PLATFORM_ID); // Inyecta PLATFORM_ID
+    private notificationService = inject(NotificationService);
 
 
     constructor(private fb: FormBuilder,
-                private reportService: ReportService,
-                private categoryService: CategoryService,
-                private snackBar: MatSnackBar,
-                private router: Router,
-                private route: ActivatedRoute,
-                private cdRef: ChangeDetectorRef) {
+        private reportService: ReportService,
+        private categoryService: CategoryService,
+        private snackBar: MatSnackBar,
+        private router: Router,
+        private route: ActivatedRoute,
+        private cdRef: ChangeDetectorRef) {
         this.reportForm = this.fb.group({
             title: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]],
             description: ['', [Validators.required, Validators.minLength(10)]],
             // Usaremos un FormControl simple para el select múltiple,
             // la conversión a CategoryRef[] se hará al enviar.
-            categoryIds: ['', [Validators.required, Validators.minLength(1)]],
+            categoryIds: [[], [Validators.required, Validators.minLength(1)]],
             latitude: [null, Validators.required],
             longitude: [null, Validators.required],
             selectedFile: [null, Validators.required]
@@ -92,7 +94,7 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
     loadCategories(): void {
         this.categoryService.getAllActiveCategories().subscribe({
             next: (cats) => this.categories = cats,
-            error: (err) => this.snackBar.open('Error al cargar categorías.', 'Cerrar', {duration: 3000})
+            error: (err) => this.notificationService.error("Error al cargar las categorías")
         });
     }
 
@@ -120,20 +122,40 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
             },
             error: (err) => {
                 this.isLoading = false;
-                this.snackBar.open('Error al cargar el reporte para editar.', 'Cerrar', {duration: 3000});
+                this.notificationService.error("Error al cargar el reporte para editar.")
                 this.router.navigate(['/map']); // O a donde corresponda
             }
         });
     }
 
     initializeMap(initialCoords?: [number, number]): void {
-        if (this.map) return;
-        if (!isPlatformBrowser(this.platformId))
-            return;
-        const centerCoords: LngLatLike = initialCoords
-            ? {lng: initialCoords[0], lat: initialCoords[1]}
-            : {lng: -75.681, lat: 4.533}; // Armenia por defecto
-        const initialZoom = initialCoords ? 16 : 13;
+        // 1) Intenta leer coords de sessionStorage
+        const storedLat = sessionStorage.getItem('lat');
+        const storedLng = sessionStorage.getItem('lng');
+
+        // 2) Decide centro y zoom según si hay coords guardadas
+        let centerCoords: mapboxgl.LngLatLike;
+        let initialZoom: number;
+
+        if (storedLat && storedLng) {
+            // Hay coords en sesión → úsalas
+            centerCoords = {
+                lng: parseFloat(storedLng),
+                lat: parseFloat(storedLat)
+            };
+            initialZoom = 13;
+        } else if (initialCoords) {
+            // Se pasó un initialCoords explícito (ej. en fallback de usuario)
+            centerCoords = {
+                lng: initialCoords[0],
+                lat: initialCoords[1]
+            };
+            initialZoom = 13;
+        } else {
+            // No hay nada → usa Armenia por defecto
+            centerCoords = { lng: -75.681, lat: 4.533 };
+            initialZoom = 13;
+        }
 
         try {
             this.map = new mapboxgl.Map({
@@ -144,6 +166,8 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
                 zoom: initialZoom,
                 attributionControl: false
             });
+
+            this.map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
 
             this.map.on('load', () => {
                 this.map.resize();
@@ -158,14 +182,14 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             });
 
-            this.map.on('click', ({lngLat}) => {
+            this.map.on('click', ({ lngLat }) => {
                 if (!this.isEditMode)
                     this.updateMarkerAndForm(lngLat);
             });
 
             this.map.on('error', (e) => {
                 console.error('Error en Mapbox (report form):', e);
-                this.snackBar.open('Error al cargar el mapa.', 'Cerrar', {duration: 3000});
+                this.notificationService.error("Error al cargar el mapa.");
             });
 
 
@@ -183,7 +207,7 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
         if (this.marker) {
             this.marker.setLngLat(lngLat);
         } else {
-            this.marker = new mapboxgl.Marker({draggable: !this.isEditMode})
+            this.marker = new mapboxgl.Marker({ draggable: !this.isEditMode })
                 .setLngLat(lngLat)
                 .addTo(this.map);
             if (!this.isEditMode) {
@@ -209,7 +233,7 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
             this.file = fileList[0];
 
             if (!file.type.startsWith('image/')) {
-                this.snackBar.open(`El archivo '${file.name}' no es una imagen válida.`, 'Cerrar', {duration: 3000});
+                this.notificationService.error(`El archivo '${file.name}' no es una imagen válida.`);
             }
 
             // Generar previsualización
@@ -226,7 +250,7 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     removePreview(index: number): void {
-//        this.reportForm.selectedFile = null;
+        //        this.reportForm.selectedFile = null;
         this.imagePreview = null;
     }
 
@@ -234,13 +258,13 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
     onSubmit(): void {
         if (this.reportForm.invalid) {
             this.reportForm.markAllAsTouched();
-            this.snackBar.open('Por favor, completa todos los campos requeridos.', 'Cerrar', {duration: 3000});
+            this.snackBar.open('Por favor, completa todos los campos requeridos.', 'Cerrar', { duration: 3000 });
             return;
         }
 
         // Validar imágenes (al menos una si es modo creación)
         if (!this.isEditMode && !this.file) {
-            this.snackBar.open('Debes subir al menos una imagen para el reporte.', 'Cerrar', {duration: 3000});
+            this.snackBar.open('Debes subir al menos una imagen para el reporte.', 'Cerrar', { duration: 3000 });
             return;
         }
         // En modo edición, si no se suben nuevas fotos Y no había fotos antes O se borraron todas, validar.
@@ -267,12 +291,12 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
             this.reportService.updateReport(this.reportId, reportRequest, this.file).subscribe({
                 next: () => {
                     this.isLoading = false;
-                    this.snackBar.open('Reporte actualizado con éxito.', 'Cerrar', {duration: 30});
+                    this.notificationService.success("Reporte actualizado con éxito.");
                     this.router.navigate(['/map']); // O a la lista de reportes
                 },
                 error: (err) => {
                     this.isLoading = false;
-                    this.snackBar.open('Error al actualizar el reporte.', 'Cerrar', {duration: 30});
+                    this.notificationService.error('Error al actualizar el reporte.');
                 }
             });
         } else {
@@ -281,18 +305,38 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.reportService.createReport(reportRequest, this.file).subscribe({
                     next: (createdReport) => {
                         this.isLoading = false;
-                        this.snackBar.open('Reporte creado con éxito. Pendiente de verificación.', 'Cerrar', {duration: 3000});
+                        this.notificationService.success('Reporte creado con éxito. Pendiente de verificación.');
                         this.router.navigate(['/map']); // O a donde quieras redirigir
                     },
                     error: (err) => {
                         this.isLoading = false;
-                        this.snackBar.open(err.message || 'Error al crear el reporte.', 'Cerrar', {duration: 5000});
+                        this.notificationService.error(err.message || 'Error al crear el reporte.');
                     }
                 });
             }
-
-
         }
+    }
+
+    getCategoryName(id: string): string {
+        return this.categories.find(c => c.id === id)?.name || 'Desconocido';
+    }
+
+    toggleCategory(categoryId: string): void {
+        const control = this.reportForm.get('categoryIds');
+        const current = control?.value || [];
+
+        const index = current.indexOf(categoryId);
+        if (index > -1) {
+            current.splice(index, 1); // quitar
+        } else {
+            current.push(categoryId); // agregar
+        }
+
+        control?.setValue([...current]); // importante: pasar nuevo array
+    }
+
+    isSelected(categoryId: string): boolean {
+        return this.reportForm.get('categoryIds')?.value?.includes(categoryId);
     }
 
     // Getters para validación fácil en la plantilla
@@ -323,14 +367,14 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
     private loadImages(reportId: string | undefined): void {
         if (!reportId) return;
         this.reportService.getAllImagesReportById(reportId).subscribe({
-                next: (report) => {
-                    this.imagePreview = report[0].imageUrl;
-                    console.log("Imagenes cargadas", this.imagePreview);
-                },
-                error: (err) => {
-                    this.snackBar.open('Error al cargar las imágenes del reporte.', 'Cerrar', {duration: 3000});
-                }
+            next: (report) => {
+                this.imagePreview = report[0].imageUrl;
+                console.log("Imagenes cargadas", this.imagePreview);
+            },
+            error: (err) => {
+                this.snackBar.open('Error al cargar las imágenes del reporte.', 'Cerrar', { duration: 3000 });
             }
+        }
         )
 
     }
