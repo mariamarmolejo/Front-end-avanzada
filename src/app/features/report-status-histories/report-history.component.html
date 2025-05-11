@@ -1,0 +1,144 @@
+<!-- src/app/features/report-status-history/report-history.component.html -->
+<button mat-icon-button class="back-button" (click)="goBack()" aria-label="Volver">
+  <mat-icon>arrow_back</mat-icon>
+</button>
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Historial de Cambios de Estado</mat-card-title>
+  </mat-card-header>
+  <br>
+
+  <mat-card-content>
+    <!-- Filtros -->
+    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="filter-form">
+      <div class="filter-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo de Filtro</mat-label>
+          <mat-select formControlName="filterType">
+            <mat-option value="all">Todos los historiales</mat-option>
+            <mat-option value="by-report">Por Reporte</mat-option>
+            <mat-option value="by-user">Por Usuario</mat-option>
+            <mat-option value="by-status">Por Cambio de Estado</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Campos condicionales según el tipo de filtro -->
+        <ng-container *ngIf="filterForm.get('filterType')?.value === 'by-report'">
+          <mat-form-field appearance="outline">
+            <mat-label>ID de Reporte</mat-label>
+            <input matInput formControlName="reportId" required>
+          </mat-form-field>
+        </ng-container>
+
+        <ng-container *ngIf="filterForm.get('filterType')?.value === 'by-user'">
+          <mat-form-field appearance="outline">
+            <mat-label>ID de Usuario</mat-label>
+            <input matInput formControlName="userId" required>
+          </mat-form-field>
+        </ng-container>
+
+        <ng-container *ngIf="filterForm.get('filterType')?.value === 'by-status'">
+          <mat-form-field appearance="outline">
+            <mat-label>ID de Reporte</mat-label>
+            <input matInput formControlName="reportId" required>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Estado Anterior</mat-label>
+            <input matInput formControlName="previousStatus">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Estado Nuevo</mat-label>
+            <input matInput formControlName="newStatus">
+          </mat-form-field>
+        </ng-container>
+      </div>
+
+      <div class="filter-actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading()">
+          <mat-icon>search</mat-icon> Filtrar
+        </button>
+        <button mat-button type="button" (click)="clearFilters()" [disabled]="loading()">
+          <mat-icon>clear</mat-icon> Limpiar
+        </button>
+      </div>
+    </form>
+
+    <!-- Loading -->
+    @if (loading()) {
+      <div class="loading-section">
+        <mat-spinner diameter="40"></mat-spinner>
+        <span>Cargando historial...</span>
+      </div>
+    }
+
+    <!-- Tabla de resultados -->
+    @if (!loading()) {
+      <div class="table-container">
+        <table mat-table [dataSource]="paginatedData().content" class="mat-elevation-z8">
+          <!-- Columnas (igual que antes) -->
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let item">{{ item.id }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="reportId">
+            <th mat-header-cell *matHeaderCellDef>Reporte ID</th>
+            <td mat-cell *matCellDef="let item">{{ item.reportId }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="userId">
+            <th mat-header-cell *matHeaderCellDef>Usuario ID</th>
+            <td mat-cell *matCellDef="let item">{{ item.userId }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="previousStatus">
+            <th mat-header-cell *matHeaderCellDef>Estado Anterior</th>
+            <td mat-cell *matCellDef="let history">
+              <span [ngClass]="{
+                'status-pending': history.previousStatus === 'PENDING',
+                'status-rejected': history.previousStatus === 'REJECTED',
+                'status-verified': history.previousStatus === 'VERIFIED',
+                'status-resolved': history.previousStatus === 'RESOLVED',
+                'status-na': !history.previousStatus
+              }">
+                {{ history.previousStatus || 'N/A' }}
+              </span>
+            </td>
+          </ng-container>
+          
+          <ng-container matColumnDef="newStatus">
+            <th mat-header-cell *matHeaderCellDef>Estado Nuevo</th>
+            <td mat-cell *matCellDef="let history">
+              <span [ngClass]="{
+                'status-pending': history.newStatus === 'PENDING',
+                'status-rejected': history.newStatus === 'REJECTED',
+                'status-verified': history.newStatus === 'VERIFIED',
+                'status-resolved': history.newStatus === 'RESOLVED',
+                'status-na': !history.newStatus
+              }">
+                {{ history.newStatus || 'N/A' }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="changedAt">
+            <th mat-header-cell *matHeaderCellDef>Fecha Cambio</th>
+            <td mat-cell *matCellDef="let item">{{ item.changedAt | date:'medium' }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+
+        <mat-paginator [length]="paginatedData().totalElements"
+                      [pageSize]="paginatedData().size"
+                      [pageSizeOptions]="[10, 20, 50, 100]"
+                      [pageIndex]="paginatedData().page - 1"
+                      (page)="onPageChange($event)"
+                      aria-label="Seleccionar página">
+        </mat-paginator>
+      </div>
+    }
+  </mat-card-content>
+</mat-card>

@@ -12,19 +12,33 @@
         </div>
 
         <ul class="report-list">
-            <!-- Updated li element -->
-            <li *ngFor="let report of filteredReports">
-                <div (click)="flyToReport(report)" style="cursor: pointer;"> <!-- Make the text clickable for flyTo -->
-                    <strong>{{ report.title }}</strong> ({{ report.categoryList[0].name || 'Sin categoría' }})
-                    <p>Lat: {{ report.latitude }}, Lng: {{ report.longitude }}</p>
-                </div>
-                <!-- Add Edit Button -->
-                <button (click)="editReport(report.id)" class="edit-button">Editar</button>
-            </li>
-            <li *ngIf="filteredReports.length === 0">
-                No hay reportes para mostrar con el filtro actual.
-            </li>
+          <li *ngFor="let report of filteredReports">
+            <div (click)="flyToReport(report)" style="cursor: pointer;">
+              <strong>{{ report.title }}</strong>
+              ({{ getCategoryNames(report) }})
+        
+              <!-- Votos importantes -->
+              <p class="important-votes">
+                <mat-icon
+                  class="star-icon"
+                  [ngClass]="{
+                    'star-gray': report.importantVotes === 0,
+                    'star-yellow': report.importantVotes > 0
+                  }"
+                >star</mat-icon>
+                {{ report.importantVotes || 0 }}
+                voto{{ report.importantVotes === 1 ? '' : 's' }} importantes
+              </p>
+        
+              <p>descripción: {{ report.description }}</p>
+            </div>
+          </li>
+          <li *ngIf="filteredReports.length === 0">
+            No hay reportes para mostrar con el filtro actual.
+          </li>
         </ul>
+        
+          
     </div>
 
     <div class="map-panel">

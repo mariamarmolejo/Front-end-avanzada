@@ -12,7 +12,7 @@ import { environment } from "../../../environments/environment";
 import { ReportRequest } from "../../core/models/report-request.model";
 import { Report } from '../../core/models/report.model';
 import { NotificationService } from '../../core/services/Notification.service';
-
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
     selector: 'app-report',
@@ -22,7 +22,8 @@ import { NotificationService } from '../../core/services/Notification.service';
         NgIf,
         NgFor,
         ReactiveFormsModule,
-        RouterModule
+        RouterModule,
+        MatIconModule
     ],
     templateUrl: './report.component.html',
     styleUrls: ['./report.component.css']
@@ -376,6 +377,9 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
             }
         }
         )
-
     }
+
+    goBack(): void {
+        history.back();
+      }
 }

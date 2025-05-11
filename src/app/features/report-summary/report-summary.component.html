@@ -1,0 +1,106 @@
+<!-- report-pdf-generator.component.html -->
+
+<button mat-icon-button class="back-button" (click)="goBack()" aria-label="Volver">
+  <mat-icon>arrow_back</mat-icon>
+</button>
+
+<mat-card class="contenedor">
+  <mat-card-header>
+    <mat-card-title>Generar Informe PDF</mat-card-title>
+    <mat-card-subtitle>Filtros opcionales para el reporte</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form [formGroup]="filterForm" (ngSubmit)="generateReport()">
+      <!-- Sección de fechas -->
+      <div class="filter-section">
+        <h3>Filtros por Fecha</h3>
+        <div class="date-filters">
+          <mat-form-field appearance="fill">
+            <mat-label>Fecha inicio</mat-label>
+            <input matInput [matDatepicker]="startPicker" formControlName="startDate" placeholder="YYYY-MM-DD" />
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Fecha fin</mat-label>
+            <input matInput [matDatepicker]="endPicker" formControlName="endDate" placeholder="YYYY-MM-DD" />
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <mat-error *ngIf="filterForm.hasError('dateOrder')">
+          {{ filterForm.getError('dateOrder') }}
+        </mat-error>
+      </div>
+
+      <!-- Sección de categorías -->
+      <div class="filter-section">
+        <h3>Filtros por Categoría</h3>
+
+        @if (loadingCategories) {
+          <mat-spinner diameter="30"></mat-spinner>
+        } @else {
+          <div class="category-chip-container">
+            <mat-chip-listbox [multiple]="true">
+              <mat-chip-option *ngFor="let cat of categories" [selected]="isSelected(cat.id!)"
+                (click)="toggleCategory(cat.id!)">
+                {{ cat.name }}
+              </mat-chip-option>
+            </mat-chip-listbox>
+          </div>
+
+          @if (filterForm.get('categoryIds')?.invalid && filterForm.get('categoryIds')?.touched) {
+            <mat-error>
+              Debes seleccionar al menos una categoría
+            </mat-error>
+          }
+        }
+      </div>
+
+      <!-- Sección del mapa -->
+      <div class="filter-section">
+        <h3>Filtros por Ubicación</h3>
+        <p>Selecciona un área en el mapa haciendo clic para establecer el centro y arrastrando para ajustar el radio.</p>
+        
+        <div id="map-container" class="map-container"></div>
+        
+        <div class="location-inputs">
+          <mat-form-field appearance="fill">
+            <mat-label>Latitud</mat-label>
+            <input matInput formControlName="centerLat" type="number" step="0.000001" />
+            <mat-error *ngIf="filterForm.get('centerLat')?.invalid">
+              La latitud debe estar entre -90 y 90
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Longitud</mat-label>
+            <input matInput formControlName="centerLng" type="number" step="0.000001" />
+            <mat-error *ngIf="filterForm.get('centerLng')?.invalid">
+              La longitud debe estar entre -180 y 180
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Radio (km)</mat-label>
+            <input matInput formControlName="radiusKm" type="number" step="0.1" min="0" />
+            <mat-error *ngIf="filterForm.get('radiusKm')?.invalid">
+              El radio debe ser un número positivo
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+          <mat-icon>picture_as_pdf</mat-icon>
+          Generar PDF
+          <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

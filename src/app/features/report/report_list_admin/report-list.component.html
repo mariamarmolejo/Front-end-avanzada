@@ -1,0 +1,135 @@
+<!-- Botón de volver atrás -->
+<button mat-icon-button class="back-button" (click)="goBack()" aria-label="Volver">
+  <mat-icon>arrow_back</mat-icon>
+</button>
+
+<mat-card>
+  <h1>Listado de reportes</h1>
+  <mat-divider></mat-divider>
+
+  <!-- Filtro por estado -->
+  <mat-form-field appearance="outline" class="status-filter">
+    <mat-label>Filtrar por estado</mat-label>
+    <mat-select
+      [value]="selectedStatus()"
+      (selectionChange)="onStatusChange($event.value)"
+    >
+      <mat-option value="">Todos</mat-option>
+      <mat-option *ngFor="let st of statuses" [value]="st">
+        {{ st }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Loading Spinner -->
+  <div *ngIf="loading()" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <!-- Tabla de reportes -->
+  <div *ngIf="!loading()">
+    <table mat-table [dataSource]="filteredContent()" class="mat-elevation-z8">
+
+      <!-- Título -->
+      <ng-container matColumnDef="title">
+        <th mat-header-cell *matHeaderCellDef>Título</th>
+        <td mat-cell *matCellDef="let report">{{ report.title }}</td>
+      </ng-container>
+
+      <!-- Descripción -->
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef>Descripción</th>
+        <td mat-cell *matCellDef="let report">{{ report.description }}</td>
+      </ng-container>
+
+      <!-- Categorías -->
+      <ng-container matColumnDef="categories">
+        <th mat-header-cell *matHeaderCellDef>Categorías</th>
+        <td mat-cell *matCellDef="let report">
+          <mat-chip-set>
+            <mat-chip *ngFor="let cat of report.categoryList">{{ cat.name }}</mat-chip>
+          </mat-chip-set>
+        </td>
+      </ng-container>
+
+      <!-- Ubicación -->
+      <ng-container matColumnDef="location">
+        <th mat-header-cell *matHeaderCellDef>Ubicación</th>
+        <td mat-cell *matCellDef="let report">
+          {{ report.latitude }}, {{ report.longitude }}
+        </td>
+      </ng-container>
+
+      <!-- Estado -->
+      <ng-container matColumnDef="reportStatus">
+        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <td mat-cell *matCellDef="let report">
+          <span [ngClass]="{
+            'status-pending': report.reportStatus === 'PENDING',
+            'status-rejected': report.reportStatus === 'REJECTED',
+            'status-verified': report.reportStatus === 'VERIFIED',
+            'status-resolved': report.reportStatus === 'RESOLVED'
+          }">
+            {{ report.reportStatus }}
+          </span>
+        </td>
+      </ng-container>      
+
+      <!-- Fecha Creación -->
+      <ng-container matColumnDef="dateCreation">
+        <th mat-header-cell *matHeaderCellDef>Fecha Creación</th>
+        <td mat-cell *matCellDef="let report">
+          {{ report.createdAt | date: 'short' }}
+        </td>
+      </ng-container>
+
+      <!-- Votos -->
+      <ng-container matColumnDef="importantVotes">
+        <th mat-header-cell *matHeaderCellDef>Votos</th>
+        <td mat-cell *matCellDef="let report">{{ report.importantVotes }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let report">
+          <!-- PENDING -->
+          <ng-container *ngIf="report.reportStatus === 'PENDING'">
+            <button class="action-button" mat-raised-button color="primary" (click)="verifyReport(report.id)">
+              <mat-icon>check</mat-icon> Verificar
+            </button>
+            <button class="action-button" mat-raised-button color="warn" (click)="rejectReport(report.id)">
+              <mat-icon>close</mat-icon> Rechazar
+            </button>
+          </ng-container>
+      
+          <!-- REJECTED -->
+          <ng-container *ngIf="report.reportStatus === 'REJECTED'">
+            <button class="action-button" mat-raised-button color="primary" (click)="verifyReport(report.id)">
+              <mat-icon>check</mat-icon> Verificar
+            </button>
+          </ng-container>
+      
+          <!-- VERIFIED -->
+          <ng-container *ngIf="report.reportStatus === 'VERIFIED'">
+            <button class="action-button" mat-raised-button color="accent" (click)="resolveReport(report.id)">
+              <mat-icon>done_all</mat-icon> Resolver
+            </button>
+          </ng-container>
+        </td>
+      </ng-container>
+      
+      <!-- Filas -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <!-- Paginador -->
+    <mat-paginator
+      [length]="paginatedData().totalElements"
+      [pageSize]="paginatedData().size"
+      [pageIndex]="paginatedData().page"
+      [pageSizeOptions]="[5, 10, 25]"
+      (page)="onPageChange($event)">
+    </mat-paginator>
+  </div>
+</mat-card>

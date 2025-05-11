@@ -1,11 +1,7 @@
 import {
-    afterNextRender,
-    AfterRenderPhase,
-    AfterViewInit,
     ChangeDetectorRef,
     Component,
     inject,
-    NgZone,
     OnDestroy,
     OnInit,
     PLATFORM_ID
@@ -19,12 +15,13 @@ import {ReportService} from "../../../core/services/report.service";
 import {Report} from "../../../core/models/report.model";
 import { AuthService } from '../../../core/services/auth.service';
 import * as turf from '@turf/turf';
+import { MatIcon} from '@angular/material/icon';
 import {Router} from "@angular/router"; // Asegúrate de importar Marker
 
 @Component({
     selector: 'app-map-view',
     standalone: true,
-    imports: [CommonModule, NgFor, NgIf], // Añade CommonModule aquí
+    imports: [CommonModule, NgFor, NgIf, MatIcon], // Añade CommonModule aquí
     templateUrl: './map-view.component.html',
     styleUrls: ['./map-view.component.css']
 })
@@ -232,4 +229,14 @@ export class MapViewComponent implements OnInit, OnDestroy {
       // Implementa tu lógica de geocoding si quieres
       console.log('Buscar dirección:', query);
     }
+
+      // Dentro de MapViewComponent
+  getCategoryNames(report: Report): string {
+    if (!report.categoryList || report.categoryList.length === 0) {
+      return 'Sin categoría';
+    }
+    return report.categoryList.map(c => c.name).join(', ');
+  }
+
+
   }

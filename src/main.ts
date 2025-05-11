@@ -12,11 +12,11 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(),  // HttpClient standalone
 
     // Interceptor para manejar 401 → refresh token
-    {
+    /*{
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    },
+    }, */
 
     provideRouter(routes),
   ]

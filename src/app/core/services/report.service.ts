@@ -4,10 +4,11 @@ import {catchError, Observable, throwError} from 'rxjs';
 import {ReportRequest} from '../models/report-request.model';
 import {Report} from '../models/report.model';
 import {PaginatedReportResponse} from "../models/page.model";
-import {tap} from "rxjs/operators";
+import {tap, map} from "rxjs/operators";
 import {ImageService} from "./image.service";
 import {ImageUploadResponse} from "../models/Image.upload.request";
 import { Session } from 'node:inspector';
+import { ReportStatusUpdate } from '../models/report/report-status-update.model';
 
 @Injectable({
     providedIn: 'root'
@@ -110,7 +111,56 @@ export class ReportService {
         );
     }
 
+    updateReportStatus(
+        reportId: string,
+        status: 'PENDING' | 'VERIFIED' | 'REJECTED' | 'RESOLVED',
+        rejectionMessage?: string
+      ): Observable<void> {
+        const dto: ReportStatusUpdate = { status, rejectionMessage: rejectionMessage ?? null };
+        return this.http.patch<void>(
+          `${this.apiUrl}/${reportId}/status`,
+          dto,
+          { withCredentials: true }
+        );
+      }
 
+   /**
+ * Obtiene todos los reportes activos (no eliminados) paginados. Solo para admins.
+ */
+   getAllReportsPaginated(page = 1, size = 10): Observable<PaginatedReportResponse> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+  
+    return this.http.get<PaginatedReportResponse>(`${this.apiUrl}/admin`, {
+      params,
+      withCredentials: true
+    }).pipe(
+      map(response => {
+        const content: Report[] = response.content.map(report => ({
+          ...report,
+          createdAt: new Date(report.createdAt),
+          updatedAt: report.updatedAt ? new Date(report.updatedAt) : undefined,
+          resolvedAt: report.resolvedAt ? new Date(report.resolvedAt) : undefined
+        }));
+  
+        return {
+          ...response,
+          content
+        };
+      }),
+      tap(response => {
+        console.log(`Reportes cargados: página ${response.page} de ${response.totalPages}, ` +
+                    `elementos: ${response.totalElements}`);
+      }),
+      catchError(err => {
+        console.error('Error al obtener reportes paginados', err);
+        return throwError(() => err);
+      })
+    );
+  }
+  
+  
     // Helper para manejo básico de errores
     private handleError(error: any): Observable<never> {
         console.error('Ocurrió un error en ReportService:', error);

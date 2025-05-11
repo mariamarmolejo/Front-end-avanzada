@@ -9,16 +9,19 @@ export interface ReportImage { // Modelo para las imágenes asociadas
 
 export interface Report {
     id?: string;
-
     title: string;
     description: string;
-    categoryList: Category[]; // Lista de categorías completas
+    categoryList: Category[];
     latitude: number;
     longitude: number;
-    status: 'PENDING_VERIFICATION' | 'VERIFIED' | 'REJECTED' | 'RESOLVED' | 'INACTIVE'; // Posibles estados
-    reporterId: string; // ID del usuario que reportó
-    images?: ReportImage[]; // Lista de imágenes
-    createdAt: Date;
+    importantVotes: number;
+  
+    reportStatus: 'PENDING' | 'VERIFIED' | 'REJECTED' | 'RESOLVED';
+    userId: string;
+    createdAt: Date; // <- este es el nuevo campo correcto
+  
+    images?: ReportImage[];
     updatedAt?: Date;
     resolvedAt?: Date;
-}
+  }
+  

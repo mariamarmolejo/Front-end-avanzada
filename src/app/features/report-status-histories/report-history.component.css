@@ -1,0 +1,97 @@
+:root {
+    --primary-bg: #e0f4fa;
+    --primary-accent: #79b4d8;
+    --primary-dark: #1e3a5f;
+    --input-bg: #ffffff;
+    --error-color: #e74c3c;
+    --resolve-color: #26a69a;
+    --table-header-bg: #d0eaf5;
+    --table-row-hover: #f2faff;
+  }
+  
+  /* Card */
+  mat-card {
+    margin: 1.5rem auto;
+    padding: 1rem;
+    background: var(--input-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  mat-card h1 {
+    margin-bottom: 0.5rem;
+    color: var(--primary-dark);
+    font-size: 20px;
+  }
+  
+  /* Spinner */
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+  }
+  
+  /* Tabla */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th.mat-header-cell {
+    background: var(--table-header-bg);
+    font-weight: 600;
+    padding: 8px;
+  }
+  td.mat-cell {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+  }
+  tr.mat-row:hover {
+    background: var(--table-row-hover);
+    transition: background 0.2s;
+  }
+  
+  /* Etiquetas de estado */
+  .status-pending,
+  .status-rejected,
+  .status-verified,
+  .status-resolved {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+  
+  /* Colores */
+  .status-pending {
+    background: #fff59d;
+    color: #444;
+  }
+  .status-rejected {
+    background: #ef9a9a;
+    color: #fff;
+  }
+  .status-verified {
+    background: #a5d6a7;
+    color: #fff;
+  }
+  .status-resolved {
+    background: #81d4fa;
+    color: #fff;
+  }
+  
+  /* Paginador */
+  mat-paginator {
+    margin-top: 1rem;
+  }
+  
+
+  .back-button {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 1000;
+    background-color: white;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  }

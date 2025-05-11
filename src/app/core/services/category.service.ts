@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {HttpClient} from "@angular/common/http";
-import {Category} from "../models/category.model";
+import {Category, CategoryRequest} from "../models/category.model";
 
 
 @Injectable({
@@ -19,7 +19,17 @@ export class CategoryService {
             { withCredentials: true }
         );
     }
-    addCategory(category: Category): Observable<Category> {
-        return this.http.post<Category>(this.apiUrl, category);
+    addCategory(category: CategoryRequest): Observable<Category> {
+        return this.http.post<Category>(this.apiUrl, category,
+            {withCredentials: true}
+        );
     }
+
+        /** Desactiva (baja lógica) una categoría por su ID */
+    deactivateCategory(categoryId: string): Observable<void> {
+        const url = `${this.apiUrl}/${categoryId}`;
+        return this.http.delete<void>(url, { withCredentials: true });
+    }
+
+    
 }

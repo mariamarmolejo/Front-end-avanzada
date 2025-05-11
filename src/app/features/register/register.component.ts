@@ -12,6 +12,7 @@ import { RouterModule } from '@angular/router'; // <-- IMPORTA ESTO
 import { Router } from '@angular/router';
 import { UserResponse } from '../../core/models/users/user-response.model';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 
 
 @Component({
@@ -22,6 +23,7 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
     NgIf,
     ReactiveFormsModule,
     RouterModule, // <-- AGREGA ESTO
+    MatIconModule
   ],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
@@ -233,6 +235,10 @@ private getCityCoordinates(city: string): Promise<{ lng: number; lat: number }> 
       }
       return null;
     };
+  }
+
+  goBack(): void {
+    history.back();
   }
 
 }

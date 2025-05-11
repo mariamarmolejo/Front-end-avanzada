@@ -79,3 +79,22 @@
   background: #7a99c3; /* Azul más oscuro cuando se hace clic */
   transform: scale(0.95);
 }
+
+.link-button {
+  background: none;
+  border: none;
+  color: var(--primary-dark);  /* Igual que los <a> */
+  font-weight: 500;
+  font-size: 16px;
+  width: 100%;
+  text-align: left;
+  padding: 15px 20px;
+  cursor: pointer;
+  display: block;
+}
+
+.link-button:hover {
+  background: #aaa; /* Igual que li:hover */
+  border-radius: 8px;
+}
+

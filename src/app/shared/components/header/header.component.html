@@ -1,18 +1,29 @@
-<!-- Botón de menú (☰) -->
+<!-- src/app/shared/components/header/header.component.html -->
 <div class="sidebar" [class.active]="isOpen">
-    <ul>
-      <li><a (click)="navigate('/map')">Reportes</a></li>
-      <li><a href="#">Acerca de Compañía</a></li>
-      <div *ngIf="!isLoggedIn">
-        <li><a routerLink="/register">Crear cuenta</a></li>
-      </div>
-      <div *ngIf="isLoggedIn">
-        <li><a routerLink="/account">Mi Cuenta</a></li>
-        <li><a (click)="navigate('/report/new')">Crear reporte</a></li>
-        <li><a (click)="logout()">Cerrar Sesión</a></li>
-      </div>
-    </ul>
-  </div>
+  <ul>
+    <li  *ngIf="!isLoggedIn"><a routerLink="/register" (click)="toggleMenu()">Crear cuenta</a></li>
+    <li *ngIf="isLoggedIn">
+      <a (click)="toggleNotifications()">
+        🔔 Notificaciones
+        <ng-container *ngIf="(userNotificationService.notifications$ | async) as notifications">
+          <span class="badge" *ngIf="notifications.length > 0">
+            {{ notifications.length }}
+          </span>
+        </ng-container>
+      </a>
+    </li>
+    <li *ngIf="notificationsOpen" class="notification-panel">
+      <app-notification-list></app-notification-list>
+    </li>
+    <li *ngIf="isLoggedIn"><a routerLink="/map" (click)="toggleMenu()">Inicio</a></li>
+    <li *ngIf="isLoggedIn"><a routerLink="/account" (click)="toggleMenu()">Mi Cuenta</a></li>
+    <li *ngIf="isLoggedIn"><a routerLink="/report/new" (click)="toggleMenu()">Crear reporte</a></li>
+    <li *ngIf="isLoggedIn"><a routerLink="/report-list-admin" (click)="toggleMenu()">Administrar Reportes</a></li>
+    <li *ngIf="isLoggedIn"><a routerLink="/report-histories" (click)="toggleMenu()">Historias de Reportes</a></li>
+    <li *ngIf="isLoggedIn"><a routerLink="/report-summary" (click)="toggleMenu()">Generar informe</a></li>
+    <li *ngIf="isLoggedIn"><a routerLink="/category-list" (click)="toggleMenu()">Administrar Categorías</a></li>
+    <li *ngIf="isLoggedIn"><a (click)="logout(); toggleMenu()">Cerrar Sesión</a></li>
+  </ul>
+</div>
 
-  <!-- Botón para abrir el menú -->
-  <button class="menu-button" (click)="toggleMenu()">☰</button>
+<button class="menu-button" (click)="toggleMenu()">☰</button>

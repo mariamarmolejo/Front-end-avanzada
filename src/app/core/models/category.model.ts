@@ -4,3 +4,9 @@ export interface Category {
     description: string;
     createdAt?: Date;
 }
+
+export interface CategoryRequest {
+    name: string;
+    description?: string;
+  }
+  

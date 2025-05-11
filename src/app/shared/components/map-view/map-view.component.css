@@ -118,3 +118,27 @@
     cursor: pointer;
     padding: 5px;
 }
+
+.star-icon {
+    vertical-align: middle;
+    font-size: 20px;
+    margin-right: 4px;
+  }
+  
+  /* Sin votos: gris */
+  .star-gray {
+    color: gray;
+  }
+  
+  /* Con al menos un voto: amarilla */
+  .star-yellow {
+    color: gold;
+  }
+  
+  /* Opcional: estiliza el párrafo */
+  .important-votes {
+    display: flex;
+    align-items: center;
+    margin: 4px 0;
+  }
+  
