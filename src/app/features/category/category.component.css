@@ -1,187 +1,102 @@
-/* Fuente y fondo general */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f4f6f8;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .report-container {
-    max-width: 700px;
-    margin: 50px auto;
-    padding: 30px 40px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #ffffff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  }
-  
-  .report-container h2 {
-    text-align: center;
-    font-size: 28px;
-    color: #333;
-    margin-bottom: 40px; /* Más espacio bajo el título */
-  }
-  
-  /* Cada campo (label + control) */
-  .field-group {
-    margin-bottom: 40px; /* Aumentado para más separación */
-  }
-  
-  .field-group label {
-    display: block;
-    margin-bottom: 12px; /* Más espacio entre label e input */
-    font-weight: bold;
-    color: #555;
-  }
-  
-  /* Inputs, textarea y selects en bloque ocupando todo el ancho */
-  .field-group input[type="text"],
-  .field-group textarea,
-  .field-group select {
-    display: block;
-    width: 100%;
-    padding: 14px 16px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 15px;
-    background-color: #fff;
-    transition: border-color 0.2s ease;
-  }
-  
-  .field-group input:focus,
-  .field-group textarea:focus,
-  .field-group select:focus {
-    border-color: #79b4d8;
-    outline: none;
-  }
-  
-  .field-group textarea {
-    resize: vertical;
-    min-height: 120px;
-  }
-  
-  .field-group select[multiple] {
-    min-height: 120px;
-  }
-  
-  /* Mensajes de error */
-  .error-message {
-    color: #e74c3c;
-    font-size: 0.9em;
-    margin-top: 8px; /* Un poco más de espacio */
-  }
-  
-  /* Chips de categoría (sin tocar) */
-  .category-chip-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .category-chip-container button {
-    background-color: #ecf0f1;
-    border: 1px solid #bdc3c7;
-    color: #2c3e50;
-    padding: 8px 14px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background 0.2s ease, border-color 0.2s ease;
-  }
-  
-  .category-chip-container button.selected {
-    background-color: #79b4d8;
-    color: #fff;
-    border-color: #1e3a5f;
-  }
-  
-  /* Previsualización de imágenes */
-  .image-previews {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 12px;
-  }
-  
-  .preview-item {
-    position: relative;
-    border-radius: 4px;
-    /* Permitir overflow visible para que la X no se corte */
-    overflow: visible;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  }
-  
-  .remove-preview-btn {
-    position: absolute;
-    top: -8px;      /* subirla un poco más */
-    right: -8px;    /* sacarla un poco más hacia afuera */
-    background: #e74c3c;
-    color: #fff;
-    border: none;
-    border-radius: 50%;
-    width: 24px;    /* agrandar el botón para que quepa la X */
-    height: 24px;
-    font-size: 14px;
-    line-height: 24px; /* centrar verticalmente */
-    text-align: center;
-    cursor: pointer;
-    z-index: 1;     /* encima de la imagen */
-  }
-  
-  .remove-preview-btn:hover {
-    background: #c0392b;
-  }
-  
-  
-  .preview-item img {
-    max-width: 100px;
-    max-height: 100px;
-    object-fit: cover;
-  }
-  
-  
-  /* Mapa */
-  #map_user,
-  #map_report {
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    height: 300px;
-    margin-top: 12px; /* Más separación sobre el mapa */
-  }
-  
-  /* Botón de envío (gris/blanco, como pediste) */
-  .submit-button {
-    display: block;
-    width: 100%;
-    padding: 14px;
-    background-color: #f9f9f9;
-    color: #333;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin-top: 30px; /* Separación clara antes del botón */
-  }
-  
-  .submit-button:hover:not(:disabled) {
-    background-color: #e0e0e0;
-  }
-  
-  .submit-button:disabled {
-    background-color: #ddd;
-    cursor: not-allowed;
-  }
+/* ----------------------------- */
+/* Botón “Atrás” fijo              */
+/* ----------------------------- */
+.back-button {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1000;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
 
-  .back-button {
-    position: fixed;
-    top: 16px;
-    left: 16px;
-    z-index: 1000;
-    background-color: white;
-    border-radius: 50%;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  }
-  
+.back-button:hover {
+  background-color: #f0f0f0;
+  transform: translateX(-2px);
+}
+
+/* ----------------------------- */
+/* Contenedor de formulario       */
+/* ----------------------------- */
+.report-container {
+  max-width: 700px;
+  margin: 80px auto 40px; /* más espacio arriba para no chocar con “Atrás” */
+  padding: 30px 40px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.05);
+}
+
+/* Título centrado con separación */
+.report-container h2 {
+  text-align: center;
+  font-size: 30px;
+  color: #2c3e50;
+  margin-bottom: 30px;
+}
+
+/* ----------------------------- */
+/* Grupos de campo               */
+/* ----------------------------- */
+.field-group {
+  margin-bottom: 30px;
+}
+
+.field-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #34495e;
+}
+
+/* Aseguramos que los mat-form-field ocupen todo el ancho */
+.full-width {
+  width: 100%;
+}
+
+/* ----------------------------- */
+/* Mensajes de error             */
+/* ----------------------------- */
+.error-message {
+  color: #e74c3c;
+  font-size: 0.85em;
+  margin-top: 6px;
+}
+
+/* ----------------------------- */
+/* Botón de envío                */
+/* ----------------------------- */
+.submit-button {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background-color: #f9f9f9;
+  color: #2c3e50;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  margin-top: 20px;
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: #eaeaea;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.submit-button:disabled {
+  background-color: #f0f0f0;
+  color: #999;
+  cursor: not-allowed;
+}
