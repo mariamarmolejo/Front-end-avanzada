@@ -19,6 +19,13 @@ export class CategoryService {
             { withCredentials: true }
         );
     }
+
+    getAllCategories(): Observable<Category[]> {
+        return this.http.get<Category[]>(`${this.apiUrl}/all`,
+            { withCredentials: true }
+        );
+    }
+
     addCategory(category: CategoryRequest): Observable<Category> {
         return this.http.post<Category>(this.apiUrl, category,
             {withCredentials: true}
@@ -31,5 +38,12 @@ export class CategoryService {
         return this.http.delete<void>(url, { withCredentials: true });
     }
 
+    getCategoryById(id: string): Observable<Category> {
+        return this.http.get<Category>(`${this.apiUrl}/${id}`, { withCredentials: true });
+      }
+    
+      updateCategory(id: string, request: CategoryRequest): Observable<Category> {
+        return this.http.put<Category>(`${this.apiUrl}/${id}`, request, { withCredentials: true });
+      }
     
 }

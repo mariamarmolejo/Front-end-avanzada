@@ -1,5 +1,5 @@
 // src/app/services/auth.service.ts
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError, of} from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -7,6 +7,7 @@ import { UserRegistration } from '../models/users/user-registration.model';
 import { UserResponse }     from '../models/users/user-response.model';
 import { JwtResponse } from '../models/Auth/jwt-response.model';
 import { HttpErrorResponse } from '@angular/common/http';
+import { UserNotificationService } from './user-notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,9 +15,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 export class AuthService {
   private readonly apiUrl = 'http://localhost:8080/api/v1';
   private apiUrlHealth = 'http://localhost:8080/api/v1/health';
+  private userNotificationService = Inject(UserNotificationService);
 
   // estado de login
   private authStatus = new BehaviorSubject<boolean>(false);
+
 
     // estado de admin
     private adminStatus = new BehaviorSubject<boolean>(false);
@@ -32,19 +35,22 @@ export class AuthService {
   }
 
   login(credentials: { email: string; password: string }): Observable<boolean> {
-    return this.http.post<JwtResponse>(
-      `${this.apiUrl}/auth/sessions`,
-      { userName: credentials.email, password: credentials.password },
-      { withCredentials: true }
-    ).pipe(
+    return this.http.post<JwtResponse>(`${this.apiUrl}/auth/sessions`, {
+      userName: credentials.email,
+      password: credentials.password
+    }, { withCredentials: true })
+    .pipe(
       tap(() => {
         this.authStatus.next(true);
-        this.checkIsAdmin().subscribe(); // ✅ ejecuta la verificación
+        this.checkIsAdmin().subscribe(); 
+
+        // Lanzamos el SSE pero capturamos sus errores internamente
+        //this.userNotificationService.safeStart();
       }),
       map(() => true),
-      catchError((err: HttpErrorResponse) => {
+      catchError(err => {
         this.authStatus.next(false);
-        this.adminStatus.next(false); // ❌ login fallido → no es admin
+        this.adminStatus.next(false);
         return throwError(() => err);
       })
     );

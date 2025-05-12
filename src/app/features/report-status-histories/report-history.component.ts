@@ -16,6 +16,7 @@ import { NotificationService } from '../../core/services/Notification.service';
 import { ReportStatusHistoryService } from '../../core/services/report-history.service';
 import { PaginatedHistoryResponse } from '../../core/models/report-status-history/report-history.model';
 import { FormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-history-list',
@@ -42,6 +43,7 @@ export class HistoryListComponent implements OnInit {
   private historyService = inject(ReportStatusHistoryService);
   private notificationService = inject(NotificationService);
   private fb = inject(FormBuilder);
+  private router = inject(Router)
 
   readonly loading = signal(false);
   readonly paginatedData = signal<PaginatedHistoryResponse>({
@@ -199,6 +201,6 @@ applyFilters(): void {
   }
 
   goBack(): void {
-    history.back();
+    this.router.navigate(['/map']);
   }
 }

@@ -95,12 +95,18 @@
       </div>
 
       <div class="actions">
-        <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+        <button mat-raised-button color="primary" type="button" (click)="clearFilters()" [disabled]="loading">
+          <mat-icon>clear</mat-icon>
+          Limpiar filtros
+        </button>
+      
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading || filterForm.invalid">
           <mat-icon>picture_as_pdf</mat-icon>
           Generar PDF
           <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
         </button>
       </div>
+      
     </form>
   </mat-card-content>
 </mat-card>

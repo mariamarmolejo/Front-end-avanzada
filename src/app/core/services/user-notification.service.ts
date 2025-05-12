@@ -1,94 +1,173 @@
-import { Injectable, inject, NgZone } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Injectable, inject, NgZone, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Observable, from } from 'rxjs';
+import { AuthService } from './auth.service';
 
 export interface NotificationDTO {
+  id: string;
   title: string;
   message: string;
   reportId: string;
-  type: string;
+  type: 'NEW_REPORT' | 'COMMENT' | 'STATUS_CHANGE';
   createdAt: string;
+  read: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
-export class UserNotificationService {
+export class UserNotificationService implements OnDestroy {
   private readonly storageKey = 'app_notifications';
   private readonly zone = inject(NgZone);
-  private readonly isBrowser = typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+  private readonly authService = inject(AuthService);
+  private eventSource: EventSource | null = null;
 
-  private readonly notificationsSubject =
-    new BehaviorSubject<NotificationDTO[]>(this.isBrowser ? this.loadFromStorage() : []);
-
+  private readonly notificationsSubject = 
+    new BehaviorSubject<NotificationDTO[]>(this.loadFromStorage());
+  
   readonly notifications$ = this.notificationsSubject.asObservable();
 
   constructor() {
-    if (this.isBrowser) {
+    this.authService.getAuthStatus().subscribe(isAuthenticated => {
+      if (isAuthenticated) {
+        this.safeStart();
+      } else {
+        this.disconnect();
+        this.clearNotifications();
+      }
+    });
+  }
+
+  /** Inicia la conexión SSE de forma segura */
+  safeStart(): void {
+    try {
+      this.disconnect(); // Asegura que no haya conexiones previas
       this.requestNotificationPermission();
       this.connectToSse();
+    } catch (err) {
+      console.warn('No se pudo iniciar SSE de notificaciones:', err);
     }
   }
 
-  private connectToSse() {
-    const eventSource = new EventSource('http://localhost:8080/api/v1/notifications/subscribe', {
-      withCredentials: true
+  private connectToSse(): void {
+    if (this.eventSource) return;
+
+    this.eventSource = new EventSource(
+      'http://localhost:8080/api/v1/notifications/subscribe',
+      { withCredentials: true }
+    );
+
+    this.eventSource.addEventListener('new-notification', (event: MessageEvent) => {
+      this.zone.run(() => {
+        const notification = this.parseNotification(event.data);
+        if (notification) {
+          this.addNotification(notification);
+          this.showBrowserNotification(notification);
+        }
+      });
     });
 
-    eventSource.addEventListener('new-notification', (event: MessageEvent) => {
-      const parsed = this.parseNotification(event.data);
-      if (parsed) {
-        this.zone.run(() => this.pushNotification(parsed));
-        this.showBrowserNotification(parsed);
-      }
-    });
-    
-    eventSource.onerror = () => eventSource.close();
+    this.eventSource.onerror = (error) => {
+      console.error('Error en conexión SSE:', error);
+      this.reconnect();
+    };
+  }
+
+  private reconnect(): void {
+    this.disconnect();
+    setTimeout(() => this.safeStart(), 5000);
+  }
+
+  private disconnect(): void {
+    if (this.eventSource) {
+      this.eventSource.close();
+      this.eventSource = null;
+    }
   }
 
   private parseNotification(data: string): NotificationDTO | null {
     try {
       const obj = JSON.parse(data);
-      if (
-        typeof obj.title === 'string' &&
-        typeof obj.message === 'string' &&
-        typeof obj.reportId === 'string' &&
-        typeof obj.type === 'string' &&
-        typeof obj.createdAt === 'string'
-      ) {
-        return obj;
+      if (obj?.title && obj?.message && obj?.reportId && obj?.type && obj?.createdAt) {
+        return {
+          id: obj.id || Date.now().toString(),
+          title: obj.title,
+          message: obj.message,
+          reportId: obj.reportId,
+          type: obj.type,
+          createdAt: obj.createdAt,
+          read: false
+        };
       }
-    } catch {
-      // no-op
+    } catch (error) {
+      console.error('Error parsing notification:', error);
     }
     return null;
   }
 
-  private pushNotification(dto: NotificationDTO) {
-    const current = [dto, ...this.notificationsSubject.value];
+  private addNotification(notification: NotificationDTO): void {
+    const current = [notification, ...this.notificationsSubject.value];
     this.notificationsSubject.next(current);
-    if (this.isBrowser) {
-      localStorage.setItem(this.storageKey, JSON.stringify(current));
-    }
+    this.saveToStorage(current);
   }
 
   private loadFromStorage(): NotificationDTO[] {
     try {
-      return JSON.parse(localStorage.getItem(this.storageKey) ?? '[]');
-    } catch {
+      return JSON.parse(localStorage.getItem(this.storageKey) || '[]');
+    } catch (error) {
+      console.error('Error loading notifications from storage:', error);
       return [];
     }
   }
 
-  private requestNotificationPermission() {
-    if ('Notification' in window) {
-      Notification.requestPermission();
+  private saveToStorage(notifications: NotificationDTO[]): void {
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(notifications));
+    } catch (error) {
+      console.error('Error saving notifications to storage:', error);
     }
   }
 
-  private showBrowserNotification(dto: NotificationDTO) {
-    if (Notification.permission === 'granted') {
-      new Notification(dto.title, {
-        body: dto.message,
-        data: dto.reportId
+  private requestNotificationPermission(): void {
+    if ('Notification' in window && Notification.permission !== 'denied') {
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          console.log('Notification permission granted');
+        }
       });
     }
+  }
+
+  private showBrowserNotification(notification: NotificationDTO): void {
+    if (Notification.permission === 'granted') {
+      new Notification(notification.title, {
+        body: notification.message,
+        icon: this.getNotificationIcon(notification.type),
+        data: { reportId: notification.reportId }
+      });
+    }
+  }
+
+  getNotificationIcon(type: 'NEW_REPORT' | 'COMMENT' | 'STATUS_CHANGE'): string {
+    const icons: Record<'NEW_REPORT' | 'COMMENT' | 'STATUS_CHANGE', string> = {
+      'NEW_REPORT': 'map_marker.png',
+      'COMMENT': 'comment.png',
+      'STATUS_CHANGE': 'status-change.png'
+    };
+    return icons[type] || 'assets/icons/notification.png';
+}
+
+  markAsRead(notificationId: string): void {
+    const updated = this.notificationsSubject.value.map(n => 
+      n.id === notificationId ? { ...n, read: true } : n
+    );
+    this.notificationsSubject.next(updated);
+    this.saveToStorage(updated);
+  }
+
+  clearNotifications(): void {
+    this.notificationsSubject.next([]);
+    localStorage.removeItem(this.storageKey);
+  }
+
+  ngOnDestroy(): void {
+    this.disconnect();
   }
 }

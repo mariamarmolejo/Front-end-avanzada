@@ -127,38 +127,52 @@ export class ReportService {
    /**
  * Obtiene todos los reportes activos (no eliminados) paginados. Solo para admins.
  */
-   getAllReportsPaginated(page = 1, size = 10): Observable<PaginatedReportResponse> {
-    const params = new HttpParams()
+   getAllReportsPaginated(
+    page = 1,
+    size = 10,
+    status?: string
+  ): Observable<PaginatedReportResponse> {
+    let params = new HttpParams()
       .set('page', page)
       .set('size', size);
   
-    return this.http.get<PaginatedReportResponse>(`${this.apiUrl}/admin`, {
-      params,
-      withCredentials: true
-    }).pipe(
-      map(response => {
-        const content: Report[] = response.content.map(report => ({
-          ...report,
-          createdAt: new Date(report.createdAt),
-          updatedAt: report.updatedAt ? new Date(report.updatedAt) : undefined,
-          resolvedAt: report.resolvedAt ? new Date(report.resolvedAt) : undefined
-        }));
+    // Si vienen estados, los añadimos como query param
+    if (status) {
+      params = params.set('status', status);
+    }
   
-        return {
-          ...response,
-          content
-        };
-      }),
-      tap(response => {
-        console.log(`Reportes cargados: página ${response.page} de ${response.totalPages}, ` +
-                    `elementos: ${response.totalElements}`);
-      }),
-      catchError(err => {
-        console.error('Error al obtener reportes paginados', err);
-        return throwError(() => err);
+    return this.http
+      .get<PaginatedReportResponse>(`${this.apiUrl}/admin`, {
+        params,
+        withCredentials: true
       })
-    );
+      .pipe(
+        map(response => {
+          const content: Report[] = response.content.map(report => ({
+            ...report,
+            createdAt: new Date(report.createdAt),
+            updatedAt: report.updatedAt ? new Date(report.updatedAt) : undefined,
+            resolvedAt: report.resolvedAt ? new Date(report.resolvedAt) : undefined
+          }));
+  
+          return {
+            ...response,
+            content
+          };
+        }),
+        tap(response => {
+          console.log(
+            `Reportes cargados: página ${response.page} de ${response.totalPages}, ` +
+            `elementos totales: ${response.totalElements}`
+          );
+        }),
+        catchError(err => {
+          console.error('Error al obtener reportes paginados', err);
+          return throwError(() => err);
+        })
+      );
   }
+  
   
   
     // Helper para manejo básico de errores

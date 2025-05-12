@@ -4,50 +4,53 @@
 </button>
 
 <div class="report-container">
-    <h2>Crear Nueva Categoría</h2>
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-  
-      <div class="field-group">
-        <label for="name">Nombre</label>
-        <mat-form-field appearance="outline" class="full-width">
-          <input
-            matInput
-            id="name"
-            formControlName="name"
-            placeholder="Nombre de la categoría"
-          />
-        </mat-form-field>
-        <div class="error-message" *ngIf="name?.touched && name?.hasError('required')">
-          El nombre es obligatorio
-        </div>
-        <div class="error-message" *ngIf="name?.touched && name?.hasError('maxLength')">
-          Máximo 100 caracteres
-        </div>
+  <h2>
+    {{ isEditMode ? 'Editar Categoría' : 'Crear Nueva Categoría' }}
+  </h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="field-group">
+      <label for="name">Nombre</label>
+      <mat-form-field appearance="outline" class="full-width">
+        <input
+          matInput
+          id="name"
+          formControlName="name"
+          placeholder="Nombre de la categoría"
+        />
+      </mat-form-field>
+      <div class="error-message" *ngIf="name?.touched && name?.hasError('required')">
+        El nombre es obligatorio
       </div>
-  
-      <div class="field-group">
-        <label for="description">Descripción (opcional)</label>
-        <mat-form-field appearance="outline" class="full-width">
-          <textarea
-            matInput
-            id="description"
-            formControlName="description"
-            placeholder="Descripción de la categoría"
-            rows="4"
-          ></textarea>
-        </mat-form-field>
-        <div class="error-message" *ngIf="description?.touched && description?.hasError('maxLength')">
-          Máximo 255 caracteres
-        </div>
+      <div class="error-message" *ngIf="name?.touched && name?.hasError('maxLength')">
+        Máximo 100 caracteres
       </div>
-  
-      <button
-        class="submit-button"
-        type="submit"
-        [disabled]="loading || form.invalid"
-      >
-        {{ loading ? 'Creando...' : 'Crear Categoría' }}
-      </button>
-    </form>
-  </div>
-  
+    </div>
+
+    <div class="field-group">
+      <label for="description">Descripción (opcional)</label>
+      <mat-form-field appearance="outline" class="full-width">
+        <textarea
+          matInput
+          id="description"
+          formControlName="description"
+          placeholder="Descripción de la categoría"
+          rows="4"
+        ></textarea>
+      </mat-form-field>
+      <div class="error-message" *ngIf="description?.touched && description?.hasError('maxLength')">
+        Máximo 255 caracteres
+      </div>
+    </div>
+
+    <button
+      class="submit-button"
+      type="submit"
+      [disabled]="loading || form.invalid"
+    >
+      {{ loading
+         ? (isEditMode ? 'Actualizando...' : 'Creando...')
+         : (isEditMode ? 'Actualizar Categoría' : 'Crear Categoría') }}
+    </button>
+  </form>
+</div>

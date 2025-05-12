@@ -22,6 +22,7 @@ import { AbstractControl, ValidationErrors } from '@angular/forms';
 import * as turf from '@turf/turf';
 import mapboxgl from 'mapbox-gl';
 import { environment } from '../../../environments/environment';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-report-pdf-generator',
@@ -56,6 +57,7 @@ export class ReportPdfGeneratorComponent implements OnInit, AfterViewInit, OnDes
   map!: mapboxgl.Map;
   radiusMarker: mapboxgl.Marker | null = null;
   isMapInitialized = false;
+  private router = inject(Router)
 
   filterForm = this.fb.group({
     startDate: new FormControl<Date | null>(null),
@@ -338,6 +340,40 @@ export class ReportPdfGeneratorComponent implements OnInit, AfterViewInit, OnDes
   }
 
   goBack(): void {
-    history.back();
+    this.router.navigate(['/map']);
   }
+
+  /**
+ * Resetea todos los filtros al estado inicial
+ * y remueve el círculo y marcador del mapa si existen.
+ */
+clearFilters(): void {
+  // 1) Resetear el formulario
+  this.filterForm.reset({
+    startDate: null,
+    endDate: null,
+    categoryIds: [],
+    centerLat: null,
+    centerLng: null,
+    radiusKm: null
+  });
+
+  // 2) Si el mapa ya está inicializado, elimina layers, source y marcador
+  if (this.isMapInitialized) {
+    // remover capas
+    ['radius-fill', 'radius-outline'].forEach(layerId => {
+      if (this.map.getLayer(layerId)) this.map.removeLayer(layerId);
+    });
+    // remover fuente
+    if (this.map.getSource('radius')) {
+      this.map.removeSource('radius');
+    }
+    // remover marcador
+    if (this.radiusMarker) {
+      this.radiusMarker.remove();
+      this.radiusMarker = null;
+    }
+  }
+}
+
 }

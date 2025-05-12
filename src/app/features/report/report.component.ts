@@ -380,6 +380,6 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     goBack(): void {
-        history.back();
+        this.router.navigate(['/map']);
       }
 }

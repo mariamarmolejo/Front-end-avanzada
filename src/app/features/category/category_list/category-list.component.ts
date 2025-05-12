@@ -36,7 +36,7 @@ export class CategoryListComponent implements OnInit {
 
   loading = false;
   categories: Category[] = [];
-  displayedColumns = ['id', 'name', 'description', 'createdAt', 'actions'];
+  displayedColumns = ['id', 'name', 'description', 'createdAt',  'activated' ,'actions'];
 
   ngOnInit(): void {
     this.fetchCategories();
@@ -44,7 +44,7 @@ export class CategoryListComponent implements OnInit {
 
   private fetchCategories(): void {
     this.loading = true;
-    this.categoryService.getAllActiveCategories().subscribe({
+    this.categoryService.getAllCategories().subscribe({
       next: (cats) => this.categories = cats,
       error: (err) => {
         console.error('Error cargando categorías', err);
@@ -55,7 +55,7 @@ export class CategoryListComponent implements OnInit {
   }
 
   onAdd(): void {
-    this.router.navigate(['category/new']);
+    this.router.navigate(['/categories/create']);
   }
 
   onEdit(cat: Category): void {
@@ -95,7 +95,7 @@ export class CategoryListComponent implements OnInit {
   }
 
   goBack(): void {
-    history.back();
+    this.router.navigate(['/map']);
   }
   
 }

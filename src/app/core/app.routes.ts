@@ -10,7 +10,7 @@ import { NotFoundComponent } from '../shared/components/page-not-found/not-found
 import { ReportListComponent } from '../features/report/report_list_admin/report-list.component';
 import { HistoryListComponent } from '../features/report-status-histories/report-history.component';
 import { ReportPdfGeneratorComponent } from '../features/report-summary/report-summary.component';
-import { CategoryCreateComponent } from '../features/category/category.component';
+import { CategoryFormComponent } from '../features/category/category.component';
 import { CategoryListComponent } from '../features/category/category_list/category-list.component';
 import { AdminGuard } from './guards/admin.guard';
 
@@ -41,8 +41,9 @@ export const routes: Routes = [
   { path: 'report-list-admin', component: ReportListComponent, canActivate: [AdminGuard]},
   { path: 'report-histories', component: HistoryListComponent, canActivate: [AdminGuard]},
   { path: 'report-summary', component: ReportPdfGeneratorComponent, canActivate: [AdminGuard]},
-  { path: 'category/new', component: CategoryCreateComponent, canActivate: [AdminGuard]},
   { path: 'category-list', component: CategoryListComponent, canActivate: [AdminGuard]},
+  { path: 'categories/create', component: CategoryFormComponent, canActivate: [AdminGuard] },
+  { path: 'categories/edit/:id', component: CategoryFormComponent, canActivate: [AdminGuard] },
 
   // Comodín (cualquier otra ruta va a login, o a dónde prefieras)
   { path: '**', component: NotFoundComponent },

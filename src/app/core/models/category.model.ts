@@ -3,6 +3,7 @@ export interface Category {
     name: string;
     description: string;
     createdAt?: Date;
+    activated: boolean;
 }
 
 export interface CategoryRequest {

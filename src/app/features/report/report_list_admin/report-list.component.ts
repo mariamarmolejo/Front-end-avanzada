@@ -16,6 +16,7 @@ import { NotificationService } from '../../../core/services/Notification.service
 import { ConfirmDialogComponent } from '../../../shared/components/dialog/confirm-dialog.component';
 import { ConfirmDialogData } from '../../../shared/components/dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-report-list',
@@ -49,6 +50,8 @@ export class ReportListComponent implements OnInit {
     totalPages: 0
   });
 
+  private router = inject(Router);
+
   // 1) Lista de estados disponibles
   readonly statuses = ['PENDING', 'VERIFIED', 'REJECTED', 'RESOLVED'] as const;
   // 2) Estado seleccionado para filtrar
@@ -80,21 +83,17 @@ export class ReportListComponent implements OnInit {
   }
 
   // Carga los reportes desde el backend
-  loadReports(page: number, size: number): void {
-    this.loading.set(true);
-    this.reportService.getAllReportsPaginated(page, size).subscribe({
-      next: data => {
-        this.paginatedData.set(data);
-      },
-      error: err => {
-        console.error('❌ Error al cargar reportes:', err);
-        this.notificationService.error('Ocurrió un error al cargar los reportes. Intenta nuevamente.');
-      },
-      complete: () => {
-        this.loading.set(false);
-      }
+  // sobrecarga tu método loadReports para pasar el filtro de estado:
+loadReports(page: number, size: number, status: string = ''): void {
+  this.loading.set(true);
+  this.reportService
+    .getAllReportsPaginated(page, size, status)    // <-- que incluya status como param
+    .subscribe({
+      next: data => this.paginatedData.set(data),
+      error: err => { /* … */ },
+      complete: () => this.loading.set(false)
     });
-  }
+}
 
   verifyReport(reportId?: string): void {
     if (!reportId) return;
@@ -177,15 +176,20 @@ export class ReportListComponent implements OnInit {
   }
   
   onPageChange(event: PageEvent): void {
-    this.loadReports(event.pageIndex + 1, event.pageSize);
+    // event.pageIndex es 0-based, backend espera 1-based
+    const page = event.pageIndex + 1;
+    const size = event.pageSize;
+    this.loadReports(page, size, this.selectedStatus());
   }
 
-  // Llamado desde el <mat-select>
   onStatusChange(status: string): void {
     this.selectedStatus.set(status);
+    // al cambiar estado, recargamos del servidor
+    this.loadReports(1, this.paginatedData().size, status);
   }
 
   goBack(): void {
-    history.back();
+    this.router.navigate(['/map']);
   }
+
 }

@@ -40,7 +40,7 @@ export class AuthInterceptor implements HttpInterceptor {
         this.refreshing = true;
         return this.http
           .post<void>(
-            '/accessTokens',
+            'http://localhost:8080/api/v1/auth/accessTokens',
             {},                  // body vacío; cookie refresh_token enviada por navegador
             { withCredentials: true }
           )

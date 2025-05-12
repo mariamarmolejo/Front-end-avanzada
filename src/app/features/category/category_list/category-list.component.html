@@ -49,6 +49,14 @@
           </td>
         </ng-container>
 
+        <ng-container matColumnDef="activated">
+          <th mat-header-cell *matHeaderCellDef>Activada?</th>
+          <td mat-cell *matCellDef="let cat" 
+              [ngClass]="{ 'bg-green': cat.activated, 'bg-red': !cat.activated }">
+            {{ cat.activated ? 'Sí' : 'No' }}
+          </td>
+        </ng-container>
+        
         <!-- Actions Column -->
         <ng-container matColumnDef="actions">
           <th mat-header-cell *matHeaderCellDef>Acciones</th>

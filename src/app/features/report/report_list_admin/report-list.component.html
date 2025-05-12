@@ -3,17 +3,14 @@
   <mat-icon>arrow_back</mat-icon>
 </button>
 
-<mat-card>
+<mat-card class="contenedor">
   <h1>Listado de reportes</h1>
   <mat-divider></mat-divider>
 
   <!-- Filtro por estado -->
   <mat-form-field appearance="outline" class="status-filter">
     <mat-label>Filtrar por estado</mat-label>
-    <mat-select
-      [value]="selectedStatus()"
-      (selectionChange)="onStatusChange($event.value)"
-    >
+    <mat-select [value]="selectedStatus()" (selectionChange)="onStatusChange($event.value)">
       <mat-option value="">Todos</mat-option>
       <mat-option *ngFor="let st of statuses" [value]="st">
         {{ st }}
@@ -73,7 +70,7 @@
             {{ report.reportStatus }}
           </span>
         </td>
-      </ng-container>      
+      </ng-container>
 
       <!-- Fecha Creación -->
       <ng-container matColumnDef="dateCreation">
@@ -101,14 +98,14 @@
               <mat-icon>close</mat-icon> Rechazar
             </button>
           </ng-container>
-      
+
           <!-- REJECTED -->
           <ng-container *ngIf="report.reportStatus === 'REJECTED'">
             <button class="action-button" mat-raised-button color="primary" (click)="verifyReport(report.id)">
               <mat-icon>check</mat-icon> Verificar
             </button>
           </ng-container>
-      
+
           <!-- VERIFIED -->
           <ng-container *ngIf="report.reportStatus === 'VERIFIED'">
             <button class="action-button" mat-raised-button color="accent" (click)="resolveReport(report.id)">
@@ -117,19 +114,16 @@
           </ng-container>
         </td>
       </ng-container>
-      
+
       <!-- Filas -->
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
 
     <!-- Paginador -->
-    <mat-paginator
-      [length]="paginatedData().totalElements"
-      [pageSize]="paginatedData().size"
-      [pageIndex]="paginatedData().page"
-      [pageSizeOptions]="[5, 10, 25]"
-      (page)="onPageChange($event)">
+    <mat-paginator [length]="paginatedData().totalElements" [pageSize]="paginatedData().size"
+      [pageIndex]="paginatedData().page - 1" [pageSizeOptions]="[5, 10, 25]" (page)="onPageChange($event)"
+      aria-label="Seleccionar página">
     </mat-paginator>
   </div>
 </mat-card>
