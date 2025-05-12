@@ -18,10 +18,10 @@
     <li *ngIf="isLoggedIn"><a routerLink="/map" (click)="toggleMenu()">Inicio</a></li>
     <li *ngIf="isLoggedIn"><a routerLink="/account" (click)="toggleMenu()">Mi Cuenta</a></li>
     <li *ngIf="isLoggedIn"><a routerLink="/report/new" (click)="toggleMenu()">Crear reporte</a></li>
-    <li *ngIf="isLoggedIn"><a routerLink="/report-list-admin" (click)="toggleMenu()">Administrar Reportes</a></li>
-    <li *ngIf="isLoggedIn"><a routerLink="/report-histories" (click)="toggleMenu()">Historias de Reportes</a></li>
-    <li *ngIf="isLoggedIn"><a routerLink="/report-summary" (click)="toggleMenu()">Generar informe</a></li>
-    <li *ngIf="isLoggedIn"><a routerLink="/category-list" (click)="toggleMenu()">Administrar Categorías</a></li>
+    <li *ngIf="isAdmin"><a routerLink="/report-list-admin" (click)="toggleMenu()">Administrar Reportes</a></li>
+    <li *ngIf="isAdmin"><a routerLink="/report-histories" (click)="toggleMenu()">Historias de Reportes</a></li>
+    <li *ngIf="isAdmin"><a routerLink="/report-summary" (click)="toggleMenu()">Generar informe</a></li>
+    <li *ngIf="isAdmin"><a routerLink="/category-list" (click)="toggleMenu()">Administrar Categorías</a></li>
     <li *ngIf="isLoggedIn"><a (click)="logout(); toggleMenu()">Cerrar Sesión</a></li>
   </ul>
 </div>

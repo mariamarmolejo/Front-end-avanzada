@@ -18,10 +18,17 @@ export class AuthService {
   // estado de login
   private authStatus = new BehaviorSubject<boolean>(false);
 
+    // estado de admin
+    private adminStatus = new BehaviorSubject<boolean>(false);
+
   constructor(private http: HttpClient) {}
 
   getAuthStatus(): Observable<boolean> {
     return this.authStatus.asObservable();
+  }
+
+  getAdminStatus(): Observable<boolean> {
+    return this.adminStatus.asObservable();
   }
 
   login(credentials: { email: string; password: string }): Observable<boolean> {
@@ -30,14 +37,19 @@ export class AuthService {
       { userName: credentials.email, password: credentials.password },
       { withCredentials: true }
     ).pipe(
-      tap(() => this.authStatus.next(true)),
+      tap(() => {
+        this.authStatus.next(true);
+        this.checkIsAdmin().subscribe(); // ✅ ejecuta la verificación
+      }),
       map(() => true),
       catchError((err: HttpErrorResponse) => {
         this.authStatus.next(false);
+        this.adminStatus.next(false); // ❌ login fallido → no es admin
         return throwError(() => err);
       })
     );
   }
+  
 
   /**
    * Llama a /me, almacena latitud/longitud en sessionStorage
@@ -184,5 +196,22 @@ checkHealth(): void {
   });
 }
 
+/* Comprueba si el usuario autenticado es admin
+* Endpoint supuesto: GET /api/v1/admin/check
+* Devuelve 204 → admin, 401/403 → no admin
+*/
+checkIsAdmin(): Observable<boolean> {
+  return this.http.get(
+    `${this.apiUrl}/users/admin`,
+    { withCredentials: true, observe: 'response' }
+  ).pipe(
+    map(resp => resp.status === 204), // ✅ true si es admin
+    tap(isAdmin => this.adminStatus.next(isAdmin)), // ✅ actualiza el estado
+    catchError(() => {
+      this.adminStatus.next(false); // ❌ si error, no es admin
+      return of(false);
+    })
+  );
+}
 
 }

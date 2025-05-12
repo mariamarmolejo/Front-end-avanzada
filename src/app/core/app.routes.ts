@@ -12,6 +12,7 @@ import { HistoryListComponent } from '../features/report-status-histories/report
 import { ReportPdfGeneratorComponent } from '../features/report-summary/report-summary.component';
 import { CategoryCreateComponent } from '../features/category/category.component';
 import { CategoryListComponent } from '../features/category/category_list/category-list.component';
+import { AdminGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   // Ruta raíz: redirige a login
@@ -37,11 +38,11 @@ export const routes: Routes = [
   { path: 'reset-password', component: ResetPassword },
 
   //Pantallas de ADMIN
-  { path: 'report-list-admin', component: ReportListComponent},
-  { path: 'report-histories', component: HistoryListComponent},
-  { path: 'report-summary', component: ReportPdfGeneratorComponent},
-  { path: 'category/new', component: CategoryCreateComponent},
-  { path: 'category-list', component: CategoryListComponent},
+  { path: 'report-list-admin', component: ReportListComponent, canActivate: [AdminGuard]},
+  { path: 'report-histories', component: HistoryListComponent, canActivate: [AdminGuard]},
+  { path: 'report-summary', component: ReportPdfGeneratorComponent, canActivate: [AdminGuard]},
+  { path: 'category/new', component: CategoryCreateComponent, canActivate: [AdminGuard]},
+  { path: 'category-list', component: CategoryListComponent, canActivate: [AdminGuard]},
 
   // Comodín (cualquier otra ruta va a login, o a dónde prefieras)
   { path: '**', component: NotFoundComponent },

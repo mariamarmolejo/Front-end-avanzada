@@ -20,8 +20,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isOpen = false;
   isLoggedIn = false;
   notificationsOpen = false;
+  isAdmin = false; 
 
-  private authSubscription!: Subscription;
+  private authSubscription = new Subscription();
 
   constructor(
     private authService: AuthService,
@@ -31,9 +32,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.authSubscription = this.authService.getAuthStatus().subscribe(status => {
-      this.isLoggedIn = status;
-    });
+    this.authSubscription.add(
+      this.authService.getAuthStatus().subscribe(status => {
+        this.isLoggedIn = status;
+      })
+    );
+
+    this.authSubscription.add(
+      this.authService.getAdminStatus().subscribe(status => {
+        this.isAdmin = status;
+      })
+    );
   }
 
   ngOnDestroy() {
