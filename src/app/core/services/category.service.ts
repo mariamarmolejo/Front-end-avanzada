@@ -1,8 +1,8 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
-import {HttpClient} from "@angular/common/http";
-import {Category, CategoryRequest} from "../models/category.model";
-import {tap} from "rxjs/operators";
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { HttpClient } from "@angular/common/http";
+import { Category, CategoryRequest } from "../models/category.model";
+import { tap } from "rxjs/operators";
 
 
 @Injectable({
@@ -40,22 +40,32 @@ export class CategoryService {
 
     addCategory(category: CategoryRequest): Observable<Category> {
         return this.http.post<Category>(this.apiUrl, category,
-            {withCredentials: true}
+            { withCredentials: true }
         );
     }
 
-        /** Desactiva (baja lógica) una categoría por su ID */
-    deactivateCategory(categoryId: string): Observable<void> {
-        const url = `${this.apiUrl}/${categoryId}`;
-        return this.http.delete<void>(url, { withCredentials: true });
+    /**
+* Alterna el estado de activación de una categoría (baja lógica/reactivación)
+* @param categoryId ID de la categoría a alternar
+* @returns Observable con el nuevo estado de activación
+*/
+    toggleCategoryActivation(categoryId: string): Observable<{ activated: boolean }> {
+        const url = `${this.apiUrl}/${categoryId}/toggle-activated`;
+        return this.http.patch<{ activated: boolean }>(
+            url,
+            {}, // Body vacío ya que la lógica está en el servidor
+            { withCredentials: true }
+        );
     }
+
+
 
     getCategoryById(id: string): Observable<Category> {
         return this.http.get<Category>(`${this.apiUrl}/${id}`, { withCredentials: true });
-      }
-    
-      updateCategory(id: string, request: CategoryRequest): Observable<Category> {
+    }
+
+    updateCategory(id: string, request: CategoryRequest): Observable<Category> {
         return this.http.put<Category>(`${this.apiUrl}/${id}`, request, { withCredentials: true });
-      }
-    
+    }
+
 }

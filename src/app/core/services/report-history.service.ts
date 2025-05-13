@@ -37,27 +37,41 @@ export class ReportStatusHistoryService {
     });
   }
 
-  getByPreviousStatus(reportId: string, status: string, page = 1, size = 20): Observable<PaginatedHistoryResponse> {
+  getByPreviousStatus(status: string, page = 1, size = 20): Observable<PaginatedHistoryResponse> {
     const params = new HttpParams()
       .set('page', page)
       .set('size', size);
-    return this.http.get<PaginatedHistoryResponse>(`${this.apiUrl}/by-report/previous-status`, { 
+    return this.http.get<PaginatedHistoryResponse>(`${this.apiUrl}/by-previous-status`, { 
       params: params
-        .set('reportId', reportId)
         .set('previousStatus', status),
       withCredentials: true 
     });
   }
 
-  // Método combinado para filtrar por estados anterior y nuevo
-  getByStatus(reportId: string, previousStatus: string, newStatus: string, page = 1, size = 20): Observable<PaginatedHistoryResponse> {
-    // Implementación según los endpoints disponibles en tu backend
-    // Esto es un ejemplo - ajusta según tus necesidades reales
+  getByNewStatus(status: string, page = 1, size = 20): Observable<PaginatedHistoryResponse> {
+    const params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+    return this.http.get<PaginatedHistoryResponse>(`${this.apiUrl}/by-new-satatus`, { 
+      params: params
+        .set('newStatus', status),
+      withCredentials: true 
+    });
+}
+
+// Método combinado para filtrar por estados
+getByStatus(previousStatus: string | null, newStatus: string | null, page = 1, size = 20): Observable<PaginatedHistoryResponse> {
+    
+    // Caso 2: Solo previousStatus tiene valor
     if (previousStatus && !newStatus) {
-      return this.getByPreviousStatus(reportId, previousStatus, page, size);
+        return this.getByPreviousStatus(previousStatus, page, size);
     }
-    // Aquí podrías añadir más lógica para otros casos
-    // Por ahora devolvemos todos los historiales del reporte
-    return this.getByReportId(reportId, page, size);
-  }
+    
+    // Caso 3: Solo newStatus tiene valor
+    if (!previousStatus && newStatus) {
+        return this.getByNewStatus(newStatus, page, size);
+    }
+    
+    return this.getAllHistories(page, size);
+}
 }

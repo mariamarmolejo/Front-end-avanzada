@@ -10,59 +10,72 @@
   <br>
 
   <mat-card-content>
-    <!-- Filtros -->
-    <form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="filter-form">
-      <div class="filter-row">
-        <mat-form-field appearance="outline">
-          <mat-label>Tipo de Filtro</mat-label>
-          <mat-select formControlName="filterType">
-            <mat-option value="all">Todos los historiales</mat-option>
-            <mat-option value="by-report">Por Reporte</mat-option>
-            <mat-option value="by-user">Por Usuario</mat-option>
-            <mat-option value="by-status">Por Cambio de Estado</mat-option>
-          </mat-select>
-        </mat-form-field>
+   <!-- Filtros -->
+<form [formGroup]="filterForm" (ngSubmit)="applyFilters()" class="filter-form">
+  <div class="filter-row">
+    <mat-form-field appearance="outline">
+      <mat-label>Tipo de Filtro</mat-label>
+      <mat-select formControlName="filterType">
+        <mat-option value="all">Todos los historiales</mat-option>
+        <mat-option value="by-report">Por Reporte</mat-option>
+        <mat-option value="by-user">Por Usuario</mat-option>
+        <mat-option value="by-previous-status">Por Estado Anterior</mat-option>
+        <mat-option value="by-new-status">Por Nuevo Estado</mat-option>
+      </mat-select>
+    </mat-form-field>
 
-        <!-- Campos condicionales según el tipo de filtro -->
-        <ng-container *ngIf="filterForm.get('filterType')?.value === 'by-report'">
-          <mat-form-field appearance="outline">
-            <mat-label>ID de Reporte</mat-label>
-            <input matInput formControlName="reportId" required>
-          </mat-form-field>
-        </ng-container>
+    <!-- Campos condicionales según el tipo de filtro -->
+    <ng-container *ngIf="filterForm.get('filterType')?.value === 'by-report'">
+      <mat-form-field appearance="outline">
+        <mat-label>ID de Reporte</mat-label>
+        <input matInput formControlName="reportId" required>
+      </mat-form-field>
+    </ng-container>
 
-        <ng-container *ngIf="filterForm.get('filterType')?.value === 'by-user'">
-          <mat-form-field appearance="outline">
-            <mat-label>ID de Usuario</mat-label>
-            <input matInput formControlName="userId" required>
-          </mat-form-field>
-        </ng-container>
+    <ng-container *ngIf="filterForm.get('filterType')?.value === 'by-user'">
+      <mat-form-field appearance="outline">
+        <mat-label>ID de Usuario</mat-label>
+        <input matInput formControlName="userId" required>
+      </mat-form-field>
+    </ng-container>
 
-        <ng-container *ngIf="filterForm.get('filterType')?.value === 'by-status'">
-          <mat-form-field appearance="outline">
-            <mat-label>ID de Reporte</mat-label>
-            <input matInput formControlName="reportId" required>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Estado Anterior</mat-label>
-            <input matInput formControlName="previousStatus">
-          </mat-form-field>
-          <mat-form-field appearance="outline">
-            <mat-label>Estado Nuevo</mat-label>
-            <input matInput formControlName="newStatus">
-          </mat-form-field>
-        </ng-container>
-      </div>
+    <ng-container *ngIf="filterForm.get('filterType')?.value === 'by-previous-status'">
+      <mat-form-field appearance="outline">
+        <mat-label>Estado Anterior</mat-label>
+        <mat-select formControlName="previousStatus">
+          <mat-option value="PENDING">PENDING</mat-option>
+          <mat-option value="DELETED">DELETED</mat-option>
+          <mat-option value="VERIFIED">VERIFIED</mat-option>
+          <mat-option value="RESOLVED">RESOLVED</mat-option>
+          <mat-option value="REJECTED">REJECTED</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
 
-      <div class="filter-actions">
-        <button mat-raised-button color="primary" type="submit" [disabled]="loading()">
-          <mat-icon>search</mat-icon> Filtrar
-        </button>
-        <button mat-button type="button" (click)="clearFilters()" [disabled]="loading()">
-          <mat-icon>clear</mat-icon> Limpiar
-        </button>
-      </div>
-    </form>
+    <ng-container *ngIf="filterForm.get('filterType')?.value === 'by-new-status'">
+      <mat-form-field appearance="outline">
+        <mat-label>Estado Nuevo</mat-label>
+        <mat-select formControlName="newStatus">
+          <mat-option value="PENDING">PENDING</mat-option>
+          <mat-option value="DELETED">DELETED</mat-option>
+          <mat-option value="VERIFIED">VERIFIED</mat-option>
+          <mat-option value="RESOLVED">RESOLVED</mat-option>
+          <mat-option value="REJECTED">REJECTED</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
+
+  </div>
+
+  <div class="filter-actions">
+    <button mat-raised-button color="primary" type="submit" [disabled]="loading() || filterForm.invalid">
+      <mat-icon>search</mat-icon> Filtrar
+    </button>
+    <button mat-button type="button" (click)="clearFilters()" [disabled]="loading()">
+      <mat-icon>clear</mat-icon> Limpiar
+    </button>
+  </div>
+</form>
 
     <!-- Loading -->
     @if (loading()) {
