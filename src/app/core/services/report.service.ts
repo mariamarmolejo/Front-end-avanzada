@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
-import {catchError, Observable, throwError} from 'rxjs';
+import {BehaviorSubject, catchError, Observable, throwError} from 'rxjs';
 import {ReportRequest} from '../models/report-request.model';
 import {Report} from '../models/report.model';
 import {PaginatedReportResponse} from "../models/page.model";
@@ -16,8 +16,17 @@ import { ReportStatusUpdate } from '../models/report/report-status-update.model'
 export class ReportService {
     // Asegúrate que la URL base sea correcta para tu API de reportes
     private apiUrl = `http://localhost:8080/api/v1/reports`; // Cambia si es necesario
+    private selectedReportSource = new BehaviorSubject<Report | null>(null);
+    selectedReport$ = this.selectedReportSource.asObservable();
+
+    private reportsSubject = new BehaviorSubject<Report[]>([]);
+    reports$: Observable<Report[]> = this.reportsSubject.asObservable();
 
     constructor(private http: HttpClient, private imageService : ImageService) {
+    }
+
+    selectReport(report: Report) {
+        this.selectedReportSource.next(report);
     }
 
     /**
@@ -49,8 +58,14 @@ export class ReportService {
 
         // Asume que el endpoint /my-reports filtra por el usuario autenticado
         return this.http.get<PaginatedReportResponse>(`${this.apiUrl}`, {params, withCredentials:true} ).pipe(
-            catchError(this.handleError)
+            tap((response: PaginatedReportResponse) => {
+                this.reportsSubject.next(response.content);
+            })
         );
+    }
+
+    refreshReports() {
+        this.getReports().subscribe();
     }
 
     /**

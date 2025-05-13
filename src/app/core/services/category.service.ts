@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {HttpClient} from "@angular/common/http";
 import {Category, CategoryRequest} from "../models/category.model";
+import {tap} from "rxjs/operators";
 
 
 @Injectable({
@@ -10,6 +11,9 @@ import {Category, CategoryRequest} from "../models/category.model";
 export class CategoryService {
     private readonly apiUrl = 'http://localhost:8080/api/v1/categories'; // Base URL for the categories API
 
+    private cetegorySubject = new BehaviorSubject<Category[]>([]);
+    categories$: Observable<Category[]> = this.cetegorySubject.asObservable();
+
     constructor(private http: HttpClient) {
 
     }
@@ -17,12 +21,20 @@ export class CategoryService {
     getAllActiveCategories(): Observable<Category[]> {
         return this.http.get<Category[]>(this.apiUrl,
             { withCredentials: true }
+        ).pipe(
+            tap((categories: Category[]) => {
+                this.cetegorySubject.next(categories);
+            })
         );
     }
 
     getAllCategories(): Observable<Category[]> {
         return this.http.get<Category[]>(`${this.apiUrl}/all`,
             { withCredentials: true }
+        ).pipe(
+            tap((categories: Category[]) => {
+                this.cetegorySubject.next(categories);
+            })
         );
     }
 

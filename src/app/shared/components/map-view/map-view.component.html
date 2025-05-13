@@ -1,45 +1,6 @@
 <div class="map-view-container">
 
-    <div class="report-panel">
-        <h3>Reportes</h3>
-
-        <div class="filter-section">
-            <label for="category-filter">Filtrar por categoría:</label>
-            <select id="category-filter" #categorySelect (change)="filterReports(categorySelect.value)">
-                <option value="">Todos</option>
-                <option *ngFor="let category of categories" [value]="category.name">{{ category.name }}</option>
-            </select>
-        </div>
-
-        <ul class="report-list">
-          <li *ngFor="let report of filteredReports">
-            <div (click)="flyToReport(report)" style="cursor: pointer;">
-              <strong>{{ report.title }}</strong>
-              ({{ getCategoryNames(report) }})
-        
-              <!-- Votos importantes -->
-              <p class="important-votes">
-                <mat-icon
-                  class="star-icon"
-                  [ngClass]="{
-                    'star-gray': report.importantVotes === 0,
-                    'star-yellow': report.importantVotes > 0
-                  }"
-                >star</mat-icon>
-                {{ report.importantVotes || 0 }}
-                voto{{ report.importantVotes === 1 ? '' : 's' }} importantes
-              </p>
-        
-              <p>descripción: {{ report.description }}</p>
-            </div>
-          </li>
-          <li *ngIf="filteredReports.length === 0">
-            No hay reportes para mostrar con el filtro actual.
-          </li>
-        </ul>
-        
-          
-    </div>
+    <report-categories-filter (actionFilterReport)="updateMarkers($event)"></report-categories-filter>
 
     <div class="map-panel">
         <div class="search-bar">
