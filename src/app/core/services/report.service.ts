@@ -7,8 +7,8 @@ import {PaginatedReportResponse} from "../models/page.model";
 import {tap, map} from "rxjs/operators";
 import {ImageService} from "./image.service";
 import {ImageUploadResponse} from "../models/Image.upload.request";
-import { Session } from 'node:inspector';
 import { ReportStatusUpdate } from '../models/report/report-status-update.model';
+import {CommentPaginatedResponse} from "../models/comment.model";
 
 @Injectable({
     providedIn: 'root'
@@ -72,7 +72,7 @@ export class ReportService {
      * Obtiene un reporte específico por ID.
      */
     getReportById(id: string): Observable<Report> {
-        return this.http.get<Report>(`${this.apiUrl}/${id}`).pipe(
+        return this.http.get<Report>(`${this.apiUrl}/${id}`, {withCredentials: true}).pipe(
             catchError(this.handleError)
         );
     }
@@ -81,10 +81,15 @@ export class ReportService {
      * Obtiene un reporte específico por ID.
      */
     getAllImagesReportById(id: string): Observable<ImageUploadResponse[]> {
-        return this.http.get<ImageUploadResponse[]>(`${this.apiUrl}/${id}/images`).pipe(
+        return this.http.get<ImageUploadResponse[]>(`${this.apiUrl}/${id}/images`, {withCredentials: true}).pipe(
             catchError(this.handleError)
         );
     }
+     getAllCommentsReportById(id: string): Observable<CommentPaginatedResponse> {
+        return this.http.get<CommentPaginatedResponse>(`${this.apiUrl}/${id}/comments`, {withCredentials: true}).pipe(
+            catchError(this.handleError)
+        );
+     }
 
     /**
      * Actualiza un reporte existente.
@@ -101,7 +106,7 @@ export class ReportService {
 
             });
         }
-        return this.http.put<Report>(`${this.apiUrl}/${id}`, reportData).pipe(
+        return this.http.put<Report>(`${this.apiUrl}/${id}`, reportData, {withCredentials: true}).pipe(
             catchError(this.handleError)
         );
     }
@@ -110,7 +115,7 @@ export class ReportService {
      * Marca un reporte como inactivo (eliminación lógica).
      */
     deleteReport(id: string): Observable<void> {
-        return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
+        return this.http.delete<void>(`${this.apiUrl}/${id}`, {withCredentials: true}).pipe(
             catchError(this.handleError)
         );
     }
@@ -121,7 +126,7 @@ export class ReportService {
      */
     resolveReport(id: string): Observable<Report> {
         // Ajusta el endpoint y método (PATCH podría ser más apropiado) según tu API
-        return this.http.patch<Report>(`${this.apiUrl}/${id}/resolve`, {}).pipe(
+        return this.http.patch<Report>(`${this.apiUrl}/${id}/resolve`, {withCredentials: true}).pipe(
             catchError(this.handleError)
         );
     }

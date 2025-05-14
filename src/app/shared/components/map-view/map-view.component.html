@@ -1,7 +1,10 @@
 <div class="map-view-container">
 
     <report-categories-filter (actionFilterReport)="updateMarkers($event)"></report-categories-filter>
-
+    <report-details-overlay
+            [report]="selectedReport"
+            (close)="selectedReport = null"
+            *ngIf="selectedReport"></report-details-overlay>
     <div class="map-panel">
         <div class="search-bar">
             <input type="text" placeholder="Buscar dirección..." #searchInput/>

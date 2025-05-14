@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {CommonModule, NgFor, NgIf} from '@angular/common'; // Importa CommonModule para *ngFor y *ngIf
 import {CategoryService} from "../../../../core/services/category.service";
 import {Category} from "../../../../core/models/category.model";
@@ -76,7 +76,7 @@ export class ReportCategoriesFilterComponent implements OnInit {
         console.log('Buscar dirección:', query);
     }
 
-    // Dentro de ReportCategoriesFilterComponent
+    // Dentro de ReportDatailsComponent
     getCategoryNames(report: Report): string {
         if (!report.categoryList || report.categoryList.length === 0) {
             return 'Sin categoría';

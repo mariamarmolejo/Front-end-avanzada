@@ -58,8 +58,6 @@ export class CategoryService {
         );
     }
 
-
-
     getCategoryById(id: string): Observable<Category> {
         return this.http.get<Category>(`${this.apiUrl}/${id}`, { withCredentials: true });
     }

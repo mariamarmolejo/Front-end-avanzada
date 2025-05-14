@@ -368,14 +368,14 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
     private loadImages(reportId: string | undefined): void {
         if (!reportId) return;
         this.reportService.getAllImagesReportById(reportId).subscribe({
-            next: (report) => {
-                this.imagePreview = report[0].imageUrl;
-                console.log("Imagenes cargadas", this.imagePreview);
-            },
-            error: (err) => {
+                next: (report) => {
+                    this.imagePreview = report[0].imageUrl;
+                    console.log("Imagenes cargadas", this.imagePreview);
+                },
+                error: (err) => {
                 this.snackBar.open('Error al cargar las imágenes del reporte.', 'Cerrar', { duration: 3000 });
+                }
             }
-        }
         )
     }
 

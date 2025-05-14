@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, inject, OnDestroy, OnInit, PLATFORM_ID} from '@angular/core';
+import {Component, EventEmitter, inject, OnDestroy, OnInit, Output, PLATFORM_ID} from '@angular/core';
 import {CommonModule, isPlatformBrowser} from '@angular/common'; // Importa CommonModule para *ngFor y *ngIf
 import {environment} from '../../../../environments/environment';
 import mapboxgl from 'mapbox-gl';
@@ -6,12 +6,13 @@ import {ReportService} from "../../../core/services/report.service";
 import {Report} from "../../../core/models/report.model";
 import {AuthService} from '../../../core/services/auth.service';
 import * as turf from '@turf/turf';
-import {ReportCategoriesFilterComponent} from "./report-categories-filter/report-categories-filter.component"; // Asegúrate de importar Marker
+import {ReportCategoriesFilterComponent} from "./report-categories-filter/report-categories-filter.component";
+import {ReportDetailsOverlayComponent} from "./report-details-overlay/report-details-overlay.component";
 
 @Component({
     selector: 'app-map-view',
     standalone: true,
-    imports: [CommonModule, ReportCategoriesFilterComponent], // Añade CommonModule aquí
+    imports: [CommonModule, ReportCategoriesFilterComponent, ReportDetailsOverlayComponent], // Añade CommonModule aquí
     templateUrl: './map-view.component.html',
     styleUrls: ['./map-view.component.css']
 })
@@ -23,18 +24,16 @@ export class MapViewComponent implements OnInit, OnDestroy {
     allReports: Report[] = [];
     selectedReport: Report | null = null;
 
-    constructor(
-        private cdRef: ChangeDetectorRef,
-        private reportService: ReportService,
-        private authService: AuthService
-    ) {
+    @Output() reportClicked = new EventEmitter<Report>();
+
+    constructor(private reportService: ReportService, private authService: AuthService) {
     }
 
     ngOnInit(): void {
 
         this.reportService.reports$.subscribe((reports) => {
             this.allReports = reports;
-            this.updateMarkers(this.allReports);
+            this.loadImage();
         });
         // 1. Obtener usuario y guardar coords
         this.authService.getCurrentUser().subscribe({
@@ -95,6 +94,7 @@ export class MapViewComponent implements OnInit, OnDestroy {
         }));
 
         this.mapa.on('load', () => {
+            this.mapa.resize();
             this.updateMarkers(this.allReports);
             this.drawUserRadius(center);
         });
@@ -158,33 +158,53 @@ export class MapViewComponent implements OnInit, OnDestroy {
 
     updateMarkers(filteredReports: Report[]): void {
         if (!this.mapa) return;
-
         this.clearMarkers();
-        if(!filteredReports || filteredReports.length === 0) {
+        if (!this.mapa || !this.mapa.isStyleLoaded()) {
+            console.warn('Map is not ready yet. Skipping marker update.');
+            // Optionally, you could queue this update or re-attempt after the map 'load' event.
             return;
         }
 
         filteredReports.forEach(report => {
+            // Crear popup
+            const popup = new mapboxgl.Popup({
+                closeButton: false,
+                closeOnMove: true,
+                anchor: 'bottom',
+                offset: [0, -20]
+            }).setHTML(`
+                  <div class="report-popup">
+                    <img src="${
+                report.images && report.images.length > 0
+                    ? report.images[0].imageUrl
+                    : 'placeholder.png'
+            }" alt="${report.title}" style="max-width:100px; max-height:100px;">
+                    <h6>${report.title}</h6>
+                    <p>Votos: ${report.importantVotes}</p>
+                  </div>
+                `);
             const marker = new mapboxgl.Marker()
                 .setLngLat([report.longitude, report.latitude])
-                .setPopup(
-                    new mapboxgl.Popup({offset: 25})
-                        .setHTML(`
-                <h6>${report.title}</h6>
-                <p>${report.description}</p>
-              `)
-                )
+                .setDraggable(false)
+                .setPopup(popup)
                 .addTo(this.mapa);
+            marker.getElement().addEventListener('mouseenter', () => {
+                popup.addTo(this.mapa)
+            });
+            marker.getElement().addEventListener('mouseleave', () => {
+                popup.remove()
+            });
 
+            marker.getElement().addEventListener('click', () => {
+                this.selectedReport = report;
+            });
             this.markers.push(marker);
         });
-        this.flyToReport(filteredReports[0]);
 
-        this.cdRef.detectChanges();
     }
 
     public flyToReport(report: Report): void {
-        if(report) {
+        if (report) {
             this.mapa.flyTo({
                 center: [report.longitude, report.latitude],
                 zoom: 15,
@@ -193,10 +213,22 @@ export class MapViewComponent implements OnInit, OnDestroy {
         }
     }
 
-
     searchAddress(query: string): void {
         // Implementa tu lógica de geocoding si quieres
         console.log('Buscar dirección:', query);
     }
 
+    loadImage(): void {
+        for (const report of this.allReports) {
+            if (report.id) {
+                this.reportService.getAllImagesReportById(report.id).subscribe({
+                    next: (images) => {
+                        if (images.length > 0 && report) {
+                            report.images = images;
+                        }
+                    }
+                });
+            }
+        }
+    }
 }

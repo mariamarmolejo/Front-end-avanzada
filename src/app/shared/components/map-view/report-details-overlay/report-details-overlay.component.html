@@ -1,0 +1,44 @@
+<div class="report-overlay" *ngIf="report">
+    <div class="report-details">
+        <button class="close-btn" (click)="close.emit()">
+            <mat-icon>close</mat-icon>
+        </button>
+
+        <h2>{{ report.title }}</h2>
+
+        <div *ngIf="report.images && report.images.length > 0" class="image-gallery">
+            <img *ngFor="let image of report.images" [src]="image.imageUrl" [alt]="report.title">
+        </div>
+        <div *ngIf="!report.images || report.images.length === 0" class="no-images">
+            No hay imágenes disponibles
+        </div>
+
+        <p class="category">
+            Categorías: {{ getCategoryNames(report) }}
+        </p>
+
+        <p class="description">
+            {{ report.description }}
+        </p>
+
+        <div class="votes">
+            <mat-icon>thumb_up</mat-icon>
+            {{ report.importantVotes }} Votos
+        </div>
+
+        <div class="comments-section">
+            <h3>Comentarios</h3>
+            <div *ngFor="let comment of report.comments" class="comment">
+                <div class="comment-header">
+                    <strong>{{ comment.userName }}</strong>
+                </div>
+                <p>{{ comment.comment }}</p>
+            </div>
+
+            <div class="add-comment">
+                <textarea [(ngModel)]="newComment" placeholder="Agregar un comentario"></textarea>
+                <button type="button" (click)="addComment()">Comentar</button>
+            </div>
+        </div>
+    </div>
+</div>
