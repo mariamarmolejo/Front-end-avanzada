@@ -1,12 +1,12 @@
 // src/app/services/auth.service.ts
-import {Inject, Injectable} from '@angular/core';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {BehaviorSubject, Observable, of, throwError} from 'rxjs';
-import {catchError, map, tap} from 'rxjs/operators';
-import {UserRegistration} from '../models/users/user-registration.model';
-import {UserResponse} from '../models/users/user-response.model';
-import {JwtResponse} from '../models/Auth/jwt-response.model';
-import {UserNotificationService} from './user-notification.service';
+import { Inject, Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+import { UserRegistration } from '../models/users/user-registration.model';
+import { UserResponse } from '../models/users/user-response.model';
+import { JwtResponse } from '../models/Auth/jwt-response.model';
+import { UserNotificationService } from './user-notification.service';
 
 @Injectable({
     providedIn: 'root'
@@ -35,11 +35,20 @@ export class AuthService {
         return this.adminStatus.asObservable();
     }
 
+
+    updatePassword(userId: string, dto: { currentPassword: string; newPassword: string }) {
+        return this.http.patch(`${this.apiUrl}/users/${userId}/password`, dto, {withCredentials: true});
+      }
+
+      deleteUser(userId: string) {
+        return this.http.delete(`${this.apiUrl}/users/${userId}`,  {withCredentials: true});
+      }
+
     login(credentials: { email: string; password: string }): Observable<boolean> {
         return this.http.post<JwtResponse>(`${this.apiUrl}/auth/sessions`, {
             userName: credentials.email,
             password: credentials.password
-        }, {withCredentials: true})
+        }, { withCredentials: true })
             .pipe(
                 tap(() => {
                     this.authStatus.next(true);
@@ -57,7 +66,6 @@ export class AuthService {
             );
     }
 
-
     /**
      * Llama a /me, almacena latitud/longitud en sessionStorage
      * y actualiza el estado de authStatus.
@@ -65,7 +73,7 @@ export class AuthService {
     getCurrentUser(): Observable<UserResponse> {
         return this.http.get<UserResponse>(
             `${this.apiUrl}/users/me`,
-            {withCredentials: true}
+            { withCredentials: true }
         ).pipe(
             tap(user => {
                 sessionStorage.setItem('lat', user.latitude.toString());
@@ -95,7 +103,7 @@ export class AuthService {
     logout(): Observable<boolean> {
         return this.http.get<boolean>(
             `${this.apiUrl}/auth/logout`,
-            {withCredentials: true}
+            { withCredentials: true }
         ).pipe(
             tap(() => {
                 this.authStatus.next(false);
@@ -123,11 +131,20 @@ export class AuthService {
         );
     }
 
+    // auth.service.ts
+    getMe(): Observable<UserResponse> {
+        return this.http.get<UserResponse>(`${this.apiUrl}/users/me`, {withCredentials: true});
+    }
+
+    updateUser(id: string, data: any): Observable<UserResponse> {
+        return this.http.put<UserResponse>(`${this.apiUrl}/users/${id}`, data,  {withCredentials: true});
+    }
+
     validateAccount(code: string): Observable<string> {
         return this.http.patch(
             `${this.apiUrl}/auth/activations?code=${code}`,
             {},
-            {responseType: 'text'} // 👈 importante
+            { responseType: 'text' } // 👈 importante
         ).pipe(
             tap(() => console.log('Validación de cuenta exitosa')),
             catchError(err => {
@@ -198,7 +215,7 @@ export class AuthService {
     checkIsAdmin(): Observable<boolean> {
         return this.http.get(
             `${this.apiUrl}/users/admin`,
-            {withCredentials: true, observe: 'response'}
+            { withCredentials: true, observe: 'response' }
         ).pipe(
             map(resp => resp.status === 204), // ✅ true si es admin
             tap(isAdmin => this.adminStatus.next(isAdmin)), // ✅ actualiza el estado

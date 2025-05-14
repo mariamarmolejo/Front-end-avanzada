@@ -1,0 +1,157 @@
+:root {
+  --primary-bg: #e0f4fa;
+  --primary-accent: #79b4d8;
+  --primary-dark: #1e3a5f;
+  --input-bg: #ffffff;
+  --error-color: #e74c3c;
+}
+
+/* Botón de volver */
+.back-button {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  background-color: var(--input-bg);
+  color: var(--primary-dark);
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  transition: all 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: var(--primary-bg);
+  transform: scale(1.05);
+}
+
+/* Tarjeta de perfil */
+.profile-card {
+  max-width: 500px;
+  width: 90%;
+  margin: 80px auto 40px;
+  padding: 24px;
+  background: var(--input-bg);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Encabezado - Centrado */
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  text-align: center;
+  width: 100%;
+}
+
+/* Avatar */
+.avatar-center {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  background-color: var(--primary-bg);
+  color: var(--primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-center mat-icon {
+  font-size: 36px;
+}
+
+/* Títulos - Centrados */
+mat-card-title {
+  font-size: 1.5rem;
+  color: var(--primary-dark);
+  margin: 0 auto 4px;
+  text-align: center;
+  width: 100%;
+}
+
+mat-card-subtitle {
+  color: var(--primary-accent);
+  font-size: 1rem;
+  text-align: center;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Contenido */
+.content {
+  padding: 16px 0;
+  margin: 16px 0;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+
+.info-group {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding: 0 8px;
+}
+
+.info-group strong {
+  color: var(--primary-dark);
+}
+
+/* Acciones */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.actions button {
+  min-width: 160px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.actions button mat-icon {
+  font-size: 20px;
+}
+
+/* Botón de eliminar */
+button[color="warn"] {
+  background-color: var(--error-color);
+  color: white;
+}
+
+button[color="warn"] mat-icon {
+  color: white;
+}
+
+/* Spinner de carga */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  margin-top: 80px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .profile-card {
+    margin-top: 60px;
+    padding: 16px;
+  }
+  
+  .actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .actions button {
+    width: 100%;
+  }
+}

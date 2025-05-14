@@ -1,0 +1,93 @@
+<!-- Botón de volver atrás -->
+<button mat-icon-button class="back-button" (click)="goBack()" aria-label="Volver">
+    <mat-icon>arrow_back</mat-icon>
+  </button>
+  
+  <div class="profile-container">
+    <h2>Actualizar campos</h2>
+  
+    <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+      <!-- Paso 1: Datos -->
+      <div *ngIf="!showMap">
+        <!-- Nombre completo -->
+        <div class="field-group">
+          <i class="icon fa fa-user"></i>
+          <input type="text" placeholder="Nombre completo" formControlName="fullName" />
+        </div>
+        <div *ngIf="hasError('fullName','required')" class="error-message">
+          ⚠ El nombre completo es obligatorio.
+        </div>
+        <div *ngIf="hasError('fullName','minlength')" class="error-message">
+          ⚠ El nombre debe tener al menos 8 caracteres.
+        </div>
+        <div *ngIf="hasError('fullName','maxlength')" class="error-message">
+          ⚠ El nombre no puede exceder 50 caracteres.
+        </div>
+  
+        <!-- Email -->
+        <div class="field-group">
+          <i class="icon fa fa-envelope"></i>
+          <input type="email" placeholder="Correo electrónico" formControlName="email" />
+        </div>
+        <div *ngIf="hasError('email','required')" class="error-message">
+          ⚠ El correo electrónico es obligatorio.
+        </div>
+        <div *ngIf="hasError('email','email')" class="error-message">
+          ⚠ El formato de correo no es válido.
+        </div>
+        <div *ngIf="hasError('email','minlength')" class="error-message">
+          ⚠ El correo debe tener al menos 8 caracteres.
+        </div>
+        <div *ngIf="hasError('email','maxlength')" class="error-message">
+          ⚠ El correo no puede exceder 50 caracteres.
+        </div>
+  
+        <!-- Ciudad -->
+        <div class="field-group">
+          <i class="icon fa fa-city"></i>
+          <input type="text" placeholder="Ciudad de residencia" formControlName="cityOfResidence" />
+        </div>
+        <div *ngIf="hasError('cityOfResidence','required')" class="error-message">
+          ⚠ La ciudad de residencia es obligatoria.
+        </div>
+  
+        <!-- Radio de notificaciones -->
+        <div class="field-group">
+          <i class="icon fa fa-bullhorn"></i>
+          <input type="number" placeholder="Radio de notificaciones (Km)" formControlName="notificationRadiusKm" />
+        </div>
+        <div *ngIf="hasError('notificationRadiusKm','required')" class="error-message">
+          ⚠ El radio de notificaciones es obligatorio.
+        </div>
+        <div *ngIf="hasError('notificationRadiusKm','min')" class="error-message">
+          ⚠ El radio de notificaciones debe ser mayor que 0.
+        </div>
+  
+        <button type="button" class="submit-button" (click)="continueToMap()" [disabled]="profileForm.invalid">
+          Actualizar Ubicación
+        </button>
+      </div>
+  
+      <!-- Cargando mapa -->
+      <div *ngIf="isLoadingMap" class="loading-spinner">
+        Cargando mapa...
+      </div>
+  
+      <!-- Paso 2: Selección en el mapa -->
+      <div *ngIf="showMap && !isLoadingMap">
+        <div id="map_user"></div>
+        <p class="map-instructions">Haz clic en el mapa para actualizar tu ubicación</p>
+  
+        <div class="form-actions">
+          <button type="submit" class="submit-button" [disabled]="profileForm.invalid || isSubmitting">
+            <i *ngIf="isSubmitting" class="fas fa-spinner fa-spin me-2"></i>
+            {{ isSubmitting ? 'Guardando...' : 'Guardar Cambios' }}
+          </button>
+  
+          <button type="button" class="submit-button" (click)="showMap = false" [disabled]="isSubmitting">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>

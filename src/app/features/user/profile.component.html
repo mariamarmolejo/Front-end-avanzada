@@ -1,0 +1,41 @@
+<!-- Botón de volver atrás -->
+<button mat-icon-button class="back-button" (click)="goBack()" aria-label="Volver">
+  <mat-icon>arrow_back</mat-icon>
+</button>
+
+<mat-card class="profile-card" *ngIf="!loading && user">
+  <mat-card-header class="profile-header">
+    <mat-card-title>{{ user.fullName }}</mat-card-title>
+    <mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
+  </mat-card-header>
+  
+  <mat-card-content class="content">
+    <div class="info-group">
+      <strong>Ciudad:</strong>
+      <span>{{ user.cityOfResidence }}</span>
+    </div>
+    <div class="info-group">
+      <strong>Radio de notificaciones:</strong>
+      <span>{{ user.notificationRadiusKm }} km</span>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions class="actions">
+    <button mat-stroked-button (click)="onEditData()">
+      <mat-icon>edit</mat-icon>
+      Editar datos
+    </button>
+    <button mat-stroked-button color="primary" (click)="onUpdatePassword()">
+      <mat-icon>lock</mat-icon>
+      Actualizar contraseña
+    </button>
+    <button mat-flat-button color="primary" (click)="onDeleteAccount()" class="delete-button">
+      <mat-icon class="delete-icon">delete_forever</mat-icon>
+      Eliminar cuenta
+    </button>
+  </mat-card-actions>
+</mat-card>
+
+<div *ngIf="loading" class="loading-spinner">
+  <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+</div>

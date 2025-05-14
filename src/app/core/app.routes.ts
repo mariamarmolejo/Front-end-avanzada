@@ -13,6 +13,9 @@ import { ReportPdfGeneratorComponent } from '../features/report-summary/report-s
 import { CategoryFormComponent } from '../features/category/category.component';
 import { CategoryListComponent } from '../features/category/category_list/category-list.component';
 import { AdminGuard } from './guards/admin.guard';
+import { UpdateProfileComponent } from '../features/user/user-update/user-update.component';
+import { PasswordUpdateComponent } from '../features/user/update-password/update-password.component';
+import { ProfileComponent } from '../features/user/profile.component';
 
 export const routes: Routes = [
   // Ruta raíz: redirige a login
@@ -30,6 +33,10 @@ export const routes: Routes = [
 
   { path: 'report/new', component: ReportComponent, canActivate: [AuthGuard] },
   { path: 'report/edit/:id', component: ReportComponent, canActivate: [AuthGuard] }, // Ruta para editar
+  {path: 'user/edit', component: UpdateProfileComponent, canActivate: [AuthGuard]},
+  {path: 'user/edit/password', component: PasswordUpdateComponent, canActivate: [AuthGuard]},
+  {path: 'profile', component: ProfileComponent, canActivate: [AuthGuard]},
+
 
   // Verificación de cuenta tras registro
   { path: 'validate-account', component: VerificationComponent },
