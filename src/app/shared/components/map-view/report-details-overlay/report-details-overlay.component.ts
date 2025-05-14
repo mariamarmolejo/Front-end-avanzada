@@ -40,8 +40,17 @@ export class ReportDetailsOverlayComponent implements OnInit {
                 comment: this.newComment.trim()
             }
             // Por ahora, usamos un nombre de usuario genérico
-            this.commentService.registerComments(commentRequest);
-            this.loadComments(this.report.id);
+            this.commentService.registerComments(commentRequest).subscribe(
+                {
+                    next: (response) => {
+                        console.log('Comentario agregado:', response);
+                        this.report?.comments?.push(response);
+                    },
+                    error: (error) => {
+                        console.error('Error al agregar comentario:', error);
+                    }
+                }
+            );
             this.newComment = '';
         }
     }
