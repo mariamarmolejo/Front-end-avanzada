@@ -1,20 +1,20 @@
 {
   "routes": {
-    "/": {},
-    "/categories/create": {},
-    "/category-list": {},
-    "/login": {},
-    "/map": {},
-    "/my-reports": {},
-    "/profile": {},
-    "/register": {},
-    "/report-histories": {},
-    "/report-list-admin": {},
-    "/report-summary": {},
-    "/report/new": {},
-    "/reset-password": {},
-    "/user/edit": {},
-    "/user/edit/password": {},
-    "/validate-account": {}
+    "/citizen": {},
+    "/citizen/categories/create": {},
+    "/citizen/category-list": {},
+    "/citizen/login": {},
+    "/citizen/map": {},
+    "/citizen/my-reports": {},
+    "/citizen/profile": {},
+    "/citizen/register": {},
+    "/citizen/report-histories": {},
+    "/citizen/report-list-admin": {},
+    "/citizen/report-summary": {},
+    "/citizen/report/new": {},
+    "/citizen/reset-password": {},
+    "/citizen/user/edit": {},
+    "/citizen/user/edit/password": {},
+    "/citizen/validate-account": {}
   }
 }

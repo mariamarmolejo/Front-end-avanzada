@@ -1,6 +1,6 @@
 
 export default {
-  basePath: '/',
+  basePath: '/citizen',
   supportedLocales: {
   "en-US": ""
 },
