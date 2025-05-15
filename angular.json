@@ -43,7 +43,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumError": "10MB"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -51,6 +51,9 @@
                   "maximumError": "8kB"
                 }
               ],
+              "production": {
+                "baseHref": "/citizen/"
+              },
               "outputHashing": "all"
             },
             "development": {
