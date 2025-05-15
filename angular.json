@@ -51,6 +51,8 @@
                   "maximumError": "8kB"
                 }
               ],
+              "baseHref": "/citizen/",
+
               "outputHashing": "all"
             },
             "development": {
