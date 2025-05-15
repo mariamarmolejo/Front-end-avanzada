@@ -11,6 +11,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, switchMap, finalize } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import {environment} from "../../../environments/environment";
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -40,7 +41,7 @@ export class AuthInterceptor implements HttpInterceptor {
         this.refreshing = true;
         return this.http
           .post<void>(
-            'http://localhost:8080/api/v1/auth/accessTokens',
+            `${environment.urlBack}/api/v1/auth/accessTokens`,
             {},                  // body vacío; cookie refresh_token enviada por navegador
             { withCredentials: true }
           )
