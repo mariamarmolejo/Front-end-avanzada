@@ -1,34 +1,15 @@
-
-/* Panel Izquierdo (Reportes) */
 .report-panel {
-    flex: 0 0 300px; /* Ancho fijo de 300px, no crece ni se encoge */
-    background-color: #f8f9fa; /* Un color de fondo claro */
+    width: 300px;                   /* Ancho fijo */
+    min-width: 300px;              /* No se puede hacer más pequeño */
+    max-width: 300px;              /* No se puede hacer más grande */
+    height: 100vh;
+    background-color: #f8f9fa;
     padding: 15px;
-    overflow-y: auto; /* Scroll si la lista es muy larga */
-    border-right: 1px solid #dee2e6; /* Separador visual */
+    border-right: 1px solid #dee2e6;
     display: flex;
-    flex-direction: column; /* Organiza elementos verticalmente */
-}
-
-.report-panel h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    color: #343a40;
-    text-align: center;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 10px;
-}
-
-/* Sección de Filtros */
-.filter-section {
-    margin-bottom: 20px;
-}
-
-.filter-section label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    font-size: 0.9em;
+    flex-direction: column;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .filter-section select {
@@ -39,13 +20,20 @@
     box-sizing: border-box; /* Para que el padding no afecte el ancho */
 }
 
-/* Lista de Reportes */
+
+.report-panel * {
+    max-width: 100%;               /* 🔥 Evita que textos o elementos ensanchen el panel */
+    word-wrap: break-word;         /* 🔥 Rompe las palabras largas si es necesario */
+    overflow-wrap: break-word;
+}
+
 .report-list {
     list-style: none;
     padding: 0;
     margin: 0;
-    flex-grow: 1; /* Ocupa el espacio restante en el panel */
-    overflow-y: auto; /* Scroll interno si es necesario */
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
 }
 
 .report-list li {
@@ -56,7 +44,7 @@
 }
 
 .report-list li:hover {
-    background-color: #e9ecef; /* Resaltado al pasar el mouse */
+    background-color: #e9ecef;
 }
 
 .report-list li strong {
@@ -69,4 +57,16 @@
     font-size: 0.85em;
     color: #6c757d;
     margin: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
+
+/* Estrellas */
+.report-list .star-icon.star-gray {
+    color: gray !important;
+  }
+  
+  .report-list .star-icon.star-yellow {
+    color: gold !important;
+  }
+  

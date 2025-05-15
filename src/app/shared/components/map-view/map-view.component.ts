@@ -172,17 +172,23 @@ export class MapViewComponent implements OnInit, OnDestroy {
                 closeOnMove: true,
                 anchor: 'bottom',
                 offset: [0, -20]
-            }).setHTML(`
-                  <div class="report-popup">
-                    <img src="${
-                report.images && report.images.length > 0
-                    ? report.images[0].imageUrl
-                    : 'placeholder.png'
-            }" alt="${report.title}" style="max-width:100px; max-height:100px;">
-                    <h6>${report.title}</h6>
-                    <p>Votos: ${report.importantVotes}</p>
+              }).setHTML(`
+                <div class="report-popup">
+                  <div class="popup-content">
+                    <div class="popup-image">
+                      <img src="${
+                        report.images && report.images.length > 0
+                          ? report.images[0].imageUrl
+                          : 'placeholder.png'
+                      }" alt="${report.title}" />
+                    </div>
+                    <div class="popup-info">
+                      <h6 class="popup-title">${report.title}</h6>
+                      <p class="popup-votes">${report.importantVotes} votos</p>
+                    </div>
                   </div>
-                `);
+                </div>
+              `);              
             const marker = new mapboxgl.Marker()
                 .setLngLat([report.longitude, report.latitude])
                 .setDraggable(false)

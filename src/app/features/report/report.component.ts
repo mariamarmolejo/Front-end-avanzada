@@ -107,25 +107,74 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.reportForm.patchValue({
                     title: report.title,
                     description: report.description,
-                    categoryIds: report.categoryList.map(cat => cat.id), // Poblar IDs para el select
+                    categoryIds: report.categoryList.map(cat => cat.id),
                     latitude: report.latitude,
                     longitude: report.longitude
                 });
-
+    
                 this.reportForm.get('selectedFile')?.clearValidators();
                 this.reportForm.get('selectedFile')?.updateValueAndValidity();
-
-                // Poblar previsualizaciones de imágenes existentes (simplificado)
+    
                 this.loadImages(report.id);
                 this.isLoading = false;
-                // Inicializar mapa DESPUÉS de tener lat/lng
-                setTimeout(() => this.initializeMap([report.longitude, report.latitude]), 100);
+                
+                // Inicializar mapa directamente con las coordenadas del reporte
+                this.initializeMapWithReportCoords(report.longitude, report.latitude);
             },
             error: (err) => {
                 this.isLoading = false;
                 this.notificationService.error("Error al cargar el reporte para editar.")
-                this.router.navigate(['/map']); // O a donde corresponda
+                this.router.navigate(['/map']);
             }
+        });
+    }
+    
+    private initializeMapWithReportCoords(lng: number, lat: number): void {
+        if (this.map) {
+            this.map.remove();
+        }
+    
+        this.map = new mapboxgl.Map({
+            accessToken: environment.mapboxToken,
+            container: 'map_user',
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [lng, lat],
+            zoom: 15,
+            attributionControl: false
+        });
+    
+        this.addMapControls();
+        this.addMarkerWithDragging(lng, lat);
+    }
+    
+    private addMapControls(): void {
+        this.map.addControl(new mapboxgl.NavigationControl(), 'bottom-right');
+        this.map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
+    }
+    
+    private addMarkerWithDragging(lng: number, lat: number): void {
+        if (this.marker) {
+            this.marker.remove();
+        }
+    
+        this.marker = new mapboxgl.Marker({
+            draggable: true // Siempre habilitado para edición
+        })
+        .setLngLat([lng, lat])
+        .addTo(this.map);
+    
+        this.marker.on('dragend', () => {
+            const newLngLat = this.marker.getLngLat();
+            this.reportForm.patchValue({
+                latitude: newLngLat.lat,
+                longitude: newLngLat.lng
+            });
+        });
+    
+        // Centrar el mapa en el marcador
+        this.map.flyTo({
+            center: [lng, lat],
+            essential: true
         });
     }
 
@@ -187,6 +236,7 @@ export class ReportComponent implements OnInit, AfterViewInit, OnDestroy {
                 if (!this.isEditMode)
                     this.updateMarkerAndForm(lngLat);
             });
+
 
             this.map.on('error', (e) => {
                 console.error('Error en Mapbox (report form):', e);

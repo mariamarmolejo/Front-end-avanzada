@@ -17,6 +17,7 @@
     </li>
     <li *ngIf="isLoggedIn"><a routerLink="/map" (click)="toggleMenu()">Inicio</a></li>
     <li *ngIf="isLoggedIn"><a routerLink="/profile" (click)="toggleMenu()">Mi Cuenta</a></li>
+    <li *ngIf="isLoggedIn"><a routerLink="/my-reports" (click)="toggleMenu()">Mis Reportes</a></li>
     <li *ngIf="isLoggedIn"><a routerLink="/report/new" (click)="toggleMenu()">Crear reporte</a></li>
     <li *ngIf="isAdmin"><a routerLink="/report-list-admin" (click)="toggleMenu()">Administrar Reportes</a></li>
     <li *ngIf="isAdmin"><a routerLink="/report-histories" (click)="toggleMenu()">Historias de Reportes</a></li>

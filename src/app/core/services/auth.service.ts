@@ -7,12 +7,13 @@ import { UserRegistration } from '../models/users/user-registration.model';
 import { UserResponse } from '../models/users/user-response.model';
 import { JwtResponse } from '../models/Auth/jwt-response.model';
 import { UserNotificationService } from './user-notification.service';
+import { environment } from '../../../environments/environment.prod';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-    private readonly apiUrl = 'http://localhost:8080/api/v1';
+    private readonly apiUrl = environment.urlBack;
     private userNotificationService = Inject(UserNotificationService);
     private currentUser = new BehaviorSubject<UserResponse | null>(null);
     currentUser$ = this.currentUser.asObservable();

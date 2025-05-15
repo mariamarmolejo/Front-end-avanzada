@@ -1,44 +1,52 @@
 <div class="report-overlay" *ngIf="report">
-    <div class="report-details">
-        <button class="close-btn" (click)="close.emit()">
-            <mat-icon>close</mat-icon>
-        </button>
+  <div class="report-details">
+    <button class="close-btn" (click)="close.emit()">
+      <mat-icon>close</mat-icon>
+    </button>
 
-        <h2>{{ report.title }}</h2>
-
-        <div *ngIf="report.images && report.images.length > 0" class="image-gallery">
-            <img *ngFor="let image of report.images" [src]="image.imageUrl" [alt]="report.title">
-        </div>
-        <div *ngIf="!report.images || report.images.length === 0" class="no-images">
-            No hay imágenes disponibles
-        </div>
-
-        <p class="category">
-            Categorías: {{ getCategoryNames(report) }}
-        </p>
-
-        <p class="description">
-            {{ report.description }}
-        </p>
-
-        <div class="votes">
-            <mat-icon>thumb_up</mat-icon>
-            {{ report.importantVotes }} Votos
-        </div>
-
-        <div class="comments-section">
-            <h3>Comentarios</h3>
-            <div *ngFor="let comment of report.comments" class="comment">
-                <div class="comment-header">
-                    <strong>{{ comment.userName }}</strong>
-                </div>
-                <p>{{ comment.comment }}</p>
-            </div>
-
-            <div class="add-comment">
-                <textarea [(ngModel)]="newComment" placeholder="Agregar un comentario"></textarea>
-                <button type="button" (click)="addComment()">Comentar</button>
-            </div>
-        </div>
+    <div class="fixed-section">
+      <h2 class="title">{{ report.title }}</h2>
+      <div *ngIf="report.images?.length; else noImages" class="image-carousel">
+        <swiper-container navigation="true" pagination="true" loop="true">
+          <swiper-slide *ngFor="let img of report.images">
+            <img [src]="img.imageUrl" [alt]="report.title" />
+          </swiper-slide>
+        </swiper-container>
+      </div>
+      <ng-template #noImages>
+        <div class="no-images">No hay imágenes disponibles</div>
+      </ng-template>
     </div>
+
+    <div class="scroll-section">
+      <p class="category"><strong>Categorías:</strong> {{ getCategoryNames() }}</p>
+      <p class="description">{{ report.description }}</p>
+
+      <div class="actions">
+        <button class="toggle-vote-btn" (click)="toggleVote(report)">
+          <mat-icon [ngClass]="hasVoted ? 'star-yellow' : 'star-gray'">star</mat-icon>
+          Es importante
+        </button>
+        <div class="votes">
+          {{ report.importantVotes }} Votos
+        </div>
+      </div>
+
+      <div class="comments-section">
+        <h3>Comentarios</h3>
+        <div *ngFor="let c of report.comments" class="comment">
+          <div class="comment-header">
+            <mat-icon>person</mat-icon>
+            <strong>{{ c.userName }}</strong>
+          </div>
+          <p>{{ c.comment }}</p>
+        </div>
+
+        <div class="add-comment">
+          <textarea [(ngModel)]="newComment" placeholder="Agregar un comentario"></textarea>
+          <button class="btn-primary" (click)="addComment()">Comentar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

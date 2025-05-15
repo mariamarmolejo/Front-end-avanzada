@@ -31,36 +31,44 @@ export class ReportCategoriesFilterComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        // 1. Suscripción a los reportes
         this.reportService.reports$.subscribe((reports) => {
-            this.allReports = reports;
-            this.filteredReports = [...this.allReports];
+          this.allReports = reports;
+          // Ordenamos y asignamos
+          this.filteredReports = this.sortByVotesDesc(this.allReports);
         });
-        // 2. Cargar datos
+    
+        // 2. Cargar categorías
         this.loadCategories();
         this.categoryService.categories$.subscribe(categories => {
-            this.categories = categories;
+          this.categories = categories;
         });
-    }
+      }
 
 
     private loadCategories(): void {
         this.categoryService.getAllActiveCategories().subscribe();
     }
 
+    private sortByVotesDesc(list: Report[]): Report[] {
+        return [...list].sort(
+          (a, b) => (b.importantVotes || 0) - (a.importantVotes || 0)
+        );
+      }
 
     filterReports(category: string): void {
         this.selectedCategory = category;
-        if (category) {
-            this.filteredReports = this.allReports.filter(r =>
-                r.categoryList?.some(cat => cat.name === category)
-            );
-        } else {
-            this.filteredReports = [...this.allReports];
-        }
-        this.actionFilterReport.emit(this.filteredReports)
-    }
-
-
+    
+        const filtered = category
+          ? this.allReports.filter(r =>
+              r.categoryList?.some(cat => cat.name === category)
+            )
+          : [...this.allReports];
+    
+        this.filteredReports = this.sortByVotesDesc(filtered);
+        this.actionFilterReport.emit(this.filteredReports);
+      }
+    
     flyToReport(report: Report): void {
         this.reportService.selectReport(report);
     }

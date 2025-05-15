@@ -3,13 +3,14 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from "@angular/common/http";
 import { Category, CategoryRequest } from "../models/category.model";
 import { tap } from "rxjs/operators";
+import { environment } from '../../../environments/environment.prod';
 
 
 @Injectable({
     providedIn: 'root'
 })
 export class CategoryService {
-    private readonly apiUrl = 'http://localhost:8080/api/v1/categories'; // Base URL for the categories API
+    private readonly apiUrl = `${environment.urlBack}/categories`; // Base URL for the categories API
 
     private cetegorySubject = new BehaviorSubject<Category[]>([]);
     categories$: Observable<Category[]> = this.cetegorySubject.asObservable();

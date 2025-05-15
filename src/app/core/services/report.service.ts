@@ -9,18 +9,24 @@ import {ImageService} from "./image.service";
 import {ImageUploadResponse} from "../models/Image.upload.request";
 import { ReportStatusUpdate } from '../models/report/report-status-update.model';
 import {CommentPaginatedResponse} from "../models/comment.model";
+import { environment } from '../../../environments/environment.prod';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ReportService {
     // Asegúrate que la URL base sea correcta para tu API de reportes
-    private apiUrl = `http://localhost:8080/api/v1/reports`; // Cambia si es necesario
+    private apiUrl = `${environment.urlBack}/reports`; // Cambia si es necesario
     private selectedReportSource = new BehaviorSubject<Report | null>(null);
     selectedReport$ = this.selectedReportSource.asObservable();
 
     private reportsSubject = new BehaviorSubject<Report[]>([]);
     reports$: Observable<Report[]> = this.reportsSubject.asObservable();
+
+    toggleVote(reportId: string): Observable<boolean> {
+      return this.http.patch<boolean>(`${this.apiUrl}/${reportId}/votes`, {}, {withCredentials: true});
+    }
+  
 
     constructor(private http: HttpClient, private imageService : ImageService) {
     }
@@ -143,6 +149,50 @@ export class ReportService {
           { withCredentials: true }
         );
       }
+
+         /**
+ * Obtiene todos los reportes activos (no eliminados) paginados. Solo para admins.
+ */
+   getMyReportsPaginated(
+    page = 1,
+    size = 10,
+    status?: string
+  ): Observable<PaginatedReportResponse> {
+    let params = new HttpParams()
+      .set('page', page)
+      .set('size', size);
+      
+    return this.http
+      .get<PaginatedReportResponse>(`${this.apiUrl}/my`, {
+        params,
+        withCredentials: true
+      })
+      .pipe(
+        map(response => {
+          const content: Report[] = response.content.map(report => ({
+            ...report,
+            createdAt: new Date(report.createdAt),
+            updatedAt: report.updatedAt ? new Date(report.updatedAt) : undefined,
+            resolvedAt: report.resolvedAt ? new Date(report.resolvedAt) : undefined
+          }));
+  
+          return {
+            ...response,
+            content
+          };
+        }),
+        tap(response => {
+          console.log(
+            `Reportes cargados: página ${response.page} de ${response.totalPages}, ` +
+            `elementos totales: ${response.totalElements}`
+          );
+        }),
+        catchError(err => {
+          console.error('Error al obtener reportes paginados', err);
+          return throwError(() => err);
+        })
+      );
+  }
 
    /**
  * Obtiene todos los reportes activos (no eliminados) paginados. Solo para admins.

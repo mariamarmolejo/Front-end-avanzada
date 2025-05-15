@@ -2,6 +2,7 @@ import {inject, Injectable, NgZone, OnDestroy, PLATFORM_ID} from '@angular/core'
 import {BehaviorSubject} from 'rxjs';
 import {AuthService} from './auth.service';
 import { isPlatformBrowser } from '@angular/common';
+import { environment } from '../../../environments/environment.prod';
 
 
 export interface NotificationDTO {
@@ -57,7 +58,7 @@ export class UserNotificationService implements OnDestroy {
         if (this.eventSource || !isPlatformBrowser(this.platformId)) return;
 
         this.eventSource = new EventSource(
-            'http://localhost:8080/api/v1/notifications/subscribe',
+            `${environment.urlBack}/notifications/subscribe`,
             {withCredentials: true}
         );
 

@@ -3,10 +3,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { PaginatedHistoryResponse} from '../models/report-status-history/report-history.model' ;
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment.prod';
 
 @Injectable({ providedIn: 'root' })
 export class ReportStatusHistoryService {
-  private apiUrl = 'http://localhost:8080/api/v1/report-status-histories';
+
+
+  private apiUrl =`${environment.urlBack}/report-status-histories`;
 
   constructor(private http: HttpClient) {}
 

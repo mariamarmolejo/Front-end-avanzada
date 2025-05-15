@@ -33,12 +33,10 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
     MatChipsModule,
     MatIconModule
   ],
-  templateUrl: './report-list.component.html',
-  styleUrls: ['./report-list.component.css']
+  templateUrl: './my-report-list.component.html',
+  styleUrls: [ './my-report-list.component.css']
 })
-
-
-export class ReportListComponent implements OnInit {
+export class MyReportsListComponent implements OnInit {
   private readonly reportService = inject(ReportService);
   private readonly notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
@@ -89,7 +87,7 @@ export class ReportListComponent implements OnInit {
 loadReports(page: number, size: number, status: string = ''): void {
   this.loading.set(true);
   this.reportService
-    .getAllReportsPaginated(page, size, status)    // <-- que incluya status como param
+    .getMyReportsPaginated(page, size, status)    // <-- que incluya status como param
     .subscribe({
       next: data => this.paginatedData.set(data),
       error: err => { /* … */ },
@@ -97,49 +95,21 @@ loadReports(page: number, size: number, status: string = ''): void {
     });
 }
 
-  verifyReport(reportId?: string): void {
+  deleteReport(reportId?: string): void {
     if (!reportId) return;
     const data: ConfirmDialogData = {
-      title: 'Verificar reporte',
-      message: '¿Seguro que deseas verificar este reporte?',
-      confirmText: 'Verificar',
+      title: 'Eliminar Reporte',
+      message: '¿Seguro que quieres eliminar este reporte?',
+      confirmText: 'Eliminar',
       cancelText: 'Cancelar'
     };
     this.dialog.open(ConfirmDialogComponent, { data })
       .afterClosed()
-      .subscribe(result => {
-        if (result === true) {
-          this.reportService.updateReportStatus(reportId, 'VERIFIED').subscribe({
+      .subscribe(yes => {
+        if (yes === true) {
+          this.reportService.deleteReport(reportId).subscribe({
             next: () => {
-              this.notificationService.success('✅ Reporte verificado correctamente.');
-              this.loadReports(1, 10); // Refresca la tabla
-            },
-            error: err => {
-              console.error('❌ Error al verificar reporte:', err);
-              this.notificationService.error('Ocurrió un error al verificar el reporte.');
-            }
-          });
-        }
-      });
-  }
-  
-  rejectReport(reportId?: string): void {
-    if (!reportId) return;
-    const data: ConfirmDialogData = {
-      title: 'Rechazar reporte',
-      message: 'Por favor, indica el motivo del rechazo:',
-      confirmText: 'Rechazar',
-      cancelText: 'Cancelar',
-      input: true,
-      inputPlaceholder: 'Motivo de rechazo…'
-    };
-    this.dialog.open(ConfirmDialogComponent, { data })
-      .afterClosed()
-      .subscribe(reason => {
-        if (typeof reason === 'string') {
-          this.reportService.updateReportStatus(reportId, 'REJECTED', reason).subscribe({
-            next: () => {
-              this.notificationService.success('✅ Reporte rechazado correctamente.');
+              this.notificationService.success('✅ Reporte eliminado correctamente.');
               this.loadReports(1, 10);
             },
             error: err => {
@@ -149,6 +119,11 @@ loadReports(page: number, size: number, status: string = ''): void {
           });
         }
       });
+  }
+
+  editReport (reportId?: string): void{
+    if (!reportId) return;
+    this.router.navigate([`report/edit/${reportId}`]);
   }
   
   resolveReport(reportId?: string): void {
@@ -195,3 +170,4 @@ loadReports(page: number, size: number, status: string = ''): void {
   }
 
 }
+

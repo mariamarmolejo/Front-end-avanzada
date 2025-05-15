@@ -16,6 +16,7 @@ import { AdminGuard } from './guards/admin.guard';
 import { UpdateProfileComponent } from '../features/user/user-update/user-update.component';
 import { PasswordUpdateComponent } from '../features/user/update-password/update-password.component';
 import { ProfileComponent } from '../features/user/profile.component';
+import { MyReportsListComponent } from '../features/report/my-report-list/my-report-list.component';
 
 export const routes: Routes = [
   // Ruta raíz: redirige a login
@@ -36,6 +37,7 @@ export const routes: Routes = [
   {path: 'user/edit', component: UpdateProfileComponent, canActivate: [AuthGuard]},
   {path: 'user/edit/password', component: PasswordUpdateComponent, canActivate: [AuthGuard]},
   {path: 'profile', component: ProfileComponent, canActivate: [AuthGuard]},
+  {path: 'my-reports', component: MyReportsListComponent, canActivate: [AuthGuard]},
 
 
   // Verificación de cuenta tras registro

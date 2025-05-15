@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import 'mapbox-gl/dist/mapbox-gl.css';
+@import 'swiper/css';
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
@@ -33,4 +34,74 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
       transform: translateY(0);
     }
   }
+
+  /* Contenedor principal */
+.report-popup {
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  cursor: default;
+}
+
+/* Efecto al pasar el ratón sobre el propio popup */
+.report-popup:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+/* Contenido en flex */
+.report-popup .popup-content {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+}
+
+/* Imagen */
+.report-popup .popup-image {
+  flex: 0 0 60px;
+  height: 60px;
+  margin-right: 8px;
+}
+.report-popup .popup-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+}
+
+/* Información de texto */
+.report-popup .popup-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.report-popup .popup-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.2;
+}
+.report-popup .popup-votes {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+}
+.report-popup .popup-votes::before {
+  content: '★';
+  margin-right: 4px;
+  color: #f9a825;
+  font-size: 1rem;
+}
+
+/* Opcional: ancla del popup (la flecha) */
+.mapboxgl-popup-tip {
+  border-top-color: #ffffff;
+}
 

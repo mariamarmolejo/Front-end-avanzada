@@ -21,7 +21,7 @@ import { FormControl } from '@angular/forms';
 import { AbstractControl, ValidationErrors } from '@angular/forms';
 import * as turf from '@turf/turf';
 import mapboxgl from 'mapbox-gl';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../environments/environment.prod';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 @Component({
@@ -319,7 +319,7 @@ export class ReportPdfGeneratorComponent implements OnInit, AfterViewInit, OnDes
       Object.entries(filter).filter(([_, v]) => v !== null)
     );
 
-    this.http.post('http://localhost:8080/api/v1/admin/reportSummaries/pdf', cleanFilter, {
+    this.http.post(`${environment.urlBack}/admin/reportSummaries/pdf`, cleanFilter, {
       params: { page: 1, size: 20 },
       responseType: 'arraybuffer',
       withCredentials: true

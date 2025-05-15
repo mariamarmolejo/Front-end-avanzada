@@ -9,6 +9,9 @@ import { provideRouter }                from '@angular/router';
 import { routes }                       from './app/core/app.routes';
 import { AuthInterceptor }              from './app/core/interceptors/auth.interceptor';
 import { HTTP_INTERCEPTORS }            from '@angular/common/http';
+import { register } from 'swiper/element/bundle';
+
+register(); // Registra los elementos personalizados de Swiper
 
 bootstrapApplication(AppComponent, {
   providers: [
